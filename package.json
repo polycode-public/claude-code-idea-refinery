@@ -25,5 +25,8 @@
     "better-sqlite3": "^13.0.3",
     "marked": "^18.0.10",
     "sqlite-vec": "^0.1.9"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
   }
 }

@@ -36,8 +36,11 @@ cp .env.example .env
 Then put your key in `VOYAGE_API_KEY`. `.env` is gitignored. The key is read from `.env`
 or the environment and never appears in output, including error messages.
 
-**3. Log in to the Claude Code CLI.** The loops run `claude -p` non-interactively, so the
-CLI has to be authenticated before you start them.
+**3. Log in to the Claude Code CLI and trust this directory.** The loops run `claude -p`
+non-interactively, so the CLI has to be authenticated before you start them — and the
+repository directory has to be trusted, or every wake's permissions are silently
+ignored and agents produce nothing. Run the CLI interactively once from the repository
+root and accept the trust dialog when it appears:
 
 ```
 claude

@@ -187,6 +187,9 @@ main {
   flex: 1;
   align-items: stretch;
 }
+/* `display: flex` above outranks the hidden attribute's own display rule, so
+   without this the board keeps its share of #left while a document is open. */
+#board[hidden] { display: none; }
 .col {
   flex: 0 0 176px;
   display: flex;
@@ -491,7 +494,9 @@ main {
   padding: 0 5px;
   flex: 0 0 auto;
 }
-.p-hash { font-family: var(--font-mono); font-size: 10px; color: var(--heat); flex: 0 0 auto; }
+.p-tag-commit { color: var(--heat); border-color: var(--heat); }
+.p-hash { font-family: var(--font-mono); font-size: 10px; color: var(--heat); flex: 0 0 auto; text-decoration: none; }
+a.p-hash:hover, a.p-hash:focus-visible { text-decoration: underline; }
 .p-text { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .p-none { color: var(--faint); font-style: italic; padding: 8px 12px; font-size: 11px; }
 </style>
@@ -620,6 +625,14 @@ main {
     return out;
   }
 
+  // The pulse's commit hash link: the server's own template with {hash}
+  // substituted, never anything from the commit message. Null template or
+  // hash renders as no link — the caller falls back to plain text.
+  function commitHref(template, hash) {
+    if (!template || !hash) return null;
+    return template.replace("{hash}", hash);
+  }
+
   exports.escapeHtml = escapeHtml;
   exports.relTime = relTime;
   exports.fmtUsd = fmtUsd;
@@ -628,6 +641,7 @@ main {
   exports.refineryPhrase = refineryPhrase;
   exports.splitIdeaBody = splitIdeaBody;
   exports.parseComments = parseComments;
+  exports.commitHref = commitHref;
 })(globalThis.VizPure = {});
 </script>
 
@@ -687,7 +701,7 @@ main {
 "use strict";
 const {
   escapeHtml, relTime, fmtUsd, agentFromLogPath, agentState, refineryPhrase,
-  splitIdeaBody, parseComments,
+  splitIdeaBody, parseComments, commitHref,
 } = globalThis.VizPure;
 const { configureMarked, renderMarkdownSafe, safeHref } = globalThis.VizMarkdown;
 
@@ -724,6 +738,7 @@ const state = {
   pulse: [],              // { t, kind: "event"|"commit", tag, hash, text, hot }
   seenHashes: new Set(),
   commitsPrimed: false,
+  commitUrlTemplate: null,
   disconnected: false,
 };
 
@@ -887,21 +902,34 @@ function renderPulse() {
     $("pulse").innerHTML = '<p class="p-none">nothing yet — commits and file events land here</p>';
     return;
   }
-  $("pulse").innerHTML = state.pulse
-    .map((p) => {
-      const t = p.t ? new Date(p.t).toTimeString().slice(0, 8) : "·";
-      const tag = p.kind === "commit"
-        ? `<span class="p-hash">${escapeHtml(p.hash)}</span>`
-        : `<span class="p-tag">${escapeHtml(p.tag)}</span>`;
-      return `<div class="p-row${p.hot ? " hot" : ""}"><span class="p-t">${t}</span>${tag}<span class="p-text" title="${escapeHtml(p.text)}">${escapeHtml(p.text)}</span></div>`;
-    })
-    .join("");
+  $("pulse").innerHTML = state.pulse.map(pulseRowHtml).join("");
   for (const p of state.pulse) p.hot = false;
+}
+
+// A commit row carries its own "commit" tag plus a hash chip — a link to
+// the origin when the server derived one, plain text otherwise. The href
+// comes only from commitUrlTemplate and the hash; the message text never
+// touches it.
+function commitMarkerHtml(hash) {
+  const href = commitHref(state.commitUrlTemplate, hash);
+  const hashHtml = href
+    ? `<a class="p-hash" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(hash)}</a>`
+    : `<span class="p-hash">${escapeHtml(hash)}</span>`;
+  return `<span class="p-tag p-tag-commit">commit</span>${hashHtml}`;
+}
+
+function pulseRowHtml(p) {
+  const t = p.t ? new Date(p.t).toTimeString().slice(0, 8) : "·";
+  const marker = p.kind === "commit"
+    ? commitMarkerHtml(p.hash)
+    : `<span class="p-tag">${escapeHtml(p.tag)}</span>`;
+  return `<div class="p-row${p.hot ? " hot" : ""}"><span class="p-t">${t}</span>${marker}<span class="p-text" title="${escapeHtml(p.text)}">${escapeHtml(p.text)}</span></div>`;
 }
 
 async function refreshCommits({ markNew }) {
   const body = await getJson("/api/commits");
   const commits = body.commits ?? [];
+  state.commitUrlTemplate = body.commitUrlTemplate ?? null;
   if (!state.commitsPrimed) {
     // The backlog: git order (newest first), no timestamps to claim.
     for (const c of commits) state.seenHashes.add(c.hash);

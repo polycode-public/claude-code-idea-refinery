@@ -123,6 +123,16 @@ test("viz-pure: agentState reads tmux windows, STOP files and caps", () => {
   );
 });
 
+test("viz-pure: commitHref substitutes {hash} and is null with no template or hash", () => {
+  const { VizPure } = runPageScript("viz-pure");
+  assert.equal(
+    VizPure.commitHref("https://gitlab.com/group/project/-/commit/{hash}", "556a80e"),
+    "https://gitlab.com/group/project/-/commit/556a80e",
+  );
+  assert.equal(VizPure.commitHref(null, "556a80e"), null);
+  assert.equal(VizPure.commitHref("https://github.com/o/r/commit/{hash}", null), null);
+});
+
 test("viz-pure: refineryPhrase names sprint, cruise, down and missing tmux", () => {
   const { VizPure } = runPageScript("viz-pure");
   assert.equal(VizPure.refineryPhrase({ state: "running", profile: "sprint" }), "running sprint");

@@ -349,6 +349,42 @@ function readCommits(root) {
     });
 }
 
+// Derives a {hash} commit-URL template from `git remote get-url origin`, for
+// GitLab and GitHub, ssh or https form. Null when there is no origin or the
+// host is neither — the client then renders the hash unlinked.
+function readCommitUrlTemplate(root) {
+  let url = "";
+  try {
+    url = execFileSync("git", ["remote", "get-url", "origin"], { cwd: root, encoding: "utf8", stdio: "pipe" }).trim();
+  } catch {
+    return null;
+  }
+  if (!url) return null;
+
+  let host = null;
+  let repoPath = null;
+  const sshMatch = url.match(/^git@([^:]+):(.+)$/);
+  if (sshMatch) {
+    host = sshMatch[1];
+    repoPath = sshMatch[2];
+  } else {
+    try {
+      const parsed = new URL(url);
+      host = parsed.hostname;
+      repoPath = parsed.pathname.replace(/^\//, "");
+    } catch {
+      return null;
+    }
+  }
+  if (!host || !repoPath) return null;
+  repoPath = repoPath.replace(/\.git$/, "").replace(/\/+$/, "");
+  if (!repoPath) return null;
+
+  if (host === "gitlab.com") return `https://gitlab.com/${repoPath}/-/commit/{hash}`;
+  if (host === "github.com") return `https://github.com/${repoPath}/commit/{hash}`;
+  return null;
+}
+
 // ---- SSE change classification --------------------------------------------
 
 // Which panel a changed relative path belongs to, or null when it is
@@ -529,7 +565,7 @@ function handleArtifact(root, res, name) {
 }
 
 function handleCommits(root, res) {
-  sendJson(res, 200, { commits: readCommits(root) });
+  sendJson(res, 200, { commits: readCommits(root), commitUrlTemplate: readCommitUrlTemplate(root) });
 }
 
 // The listings behind the plans and digests tabs: file names only, plus a

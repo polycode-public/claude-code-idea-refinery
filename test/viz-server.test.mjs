@@ -234,14 +234,19 @@ test("/api/artifact serves RANKED.md, THEMES.md and named plans/digests files, a
   });
 });
 
-test("/api/commits parses `git log --oneline`", async () => {
-  const root = tmpRoot();
+function initRepo(root, { remote } = {}) {
   execFileSync("git", ["init", "-q"], { cwd: root });
   execFileSync("git", ["config", "user.email", "test@example.com"], { cwd: root });
   execFileSync("git", ["config", "user.name", "Test"], { cwd: root });
   writeFile(root, "README.md", "hello\n");
   execFileSync("git", ["add", "README.md"], { cwd: root });
   execFileSync("git", ["commit", "-q", "-m", "chore: seed fixture repo"], { cwd: root });
+  if (remote) execFileSync("git", ["remote", "add", "origin", remote], { cwd: root });
+}
+
+test("/api/commits parses `git log --oneline`", async () => {
+  const root = tmpRoot();
+  initRepo(root);
 
   await withServer(root, async ({ base }) => {
     const res = await fetch(`${base}/api/commits`);
@@ -251,6 +256,69 @@ test("/api/commits parses `git log --oneline`", async () => {
     assert.equal(body.commits.length, 1);
     assert.match(body.commits[0].subject, /seed fixture repo/);
     assert.match(body.commits[0].hash, /^[0-9a-f]{7,}$/);
+  });
+});
+
+test("/api/commits derives commitUrlTemplate: gitlab ssh remote", async () => {
+  const root = tmpRoot();
+  initRepo(root, { remote: "git@gitlab.com:acme/widgets.git" });
+
+  await withServer(root, async ({ base }) => {
+    const res = await fetch(`${base}/api/commits`);
+    const body = await res.json();
+    assert.equal(
+      body.commitUrlTemplate,
+      "https://gitlab.com/acme/widgets/-/commit/{hash}",
+    );
+  });
+});
+
+test("/api/commits derives commitUrlTemplate: github https remote", async () => {
+  const root = tmpRoot();
+  initRepo(root, { remote: "https://github.com/octocat/hello-world.git" });
+
+  await withServer(root, async ({ base }) => {
+    const res = await fetch(`${base}/api/commits`);
+    const body = await res.json();
+    assert.equal(
+      body.commitUrlTemplate,
+      "https://github.com/octocat/hello-world/commit/{hash}",
+    );
+  });
+});
+
+test("/api/commits derives commitUrlTemplate: github ssh and gitlab https also resolve", async () => {
+  const sshRoot = tmpRoot();
+  initRepo(sshRoot, { remote: "git@github.com:octocat/hello-world.git" });
+  await withServer(sshRoot, async ({ base }) => {
+    const body = await (await fetch(`${base}/api/commits`)).json();
+    assert.equal(body.commitUrlTemplate, "https://github.com/octocat/hello-world/commit/{hash}");
+  });
+
+  const httpsRoot = tmpRoot();
+  initRepo(httpsRoot, { remote: "https://gitlab.com/acme/widgets.git" });
+  await withServer(httpsRoot, async ({ base }) => {
+    const body = await (await fetch(`${base}/api/commits`)).json();
+    assert.equal(
+      body.commitUrlTemplate,
+      "https://gitlab.com/acme/widgets/-/commit/{hash}",
+    );
+  });
+});
+
+test("/api/commits: commitUrlTemplate is null with no remote and with an unknown host", async () => {
+  const noRemoteRoot = tmpRoot();
+  initRepo(noRemoteRoot);
+  await withServer(noRemoteRoot, async ({ base }) => {
+    const body = await (await fetch(`${base}/api/commits`)).json();
+    assert.equal(body.commitUrlTemplate, null);
+  });
+
+  const unknownHostRoot = tmpRoot();
+  initRepo(unknownHostRoot, { remote: "git@example.com:group/project.git" });
+  await withServer(unknownHostRoot, async ({ base }) => {
+    const body = await (await fetch(`${base}/api/commits`)).json();
+    assert.equal(body.commitUrlTemplate, null);
   });
 });
 
