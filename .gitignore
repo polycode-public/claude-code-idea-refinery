@@ -1,0 +1,5 @@
+.env
+logs/
+index/
+.claude/worktrees/
+node_modules/

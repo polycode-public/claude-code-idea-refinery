@@ -1,0 +1,94 @@
+{
+  "cliVersion": "2.1.239",
+  "harvester": {
+    "dailyUsd": 40,
+    "wakeUsd": 3,
+    "dailyWakes": 60,
+    "sprintSeconds": 300,
+    "cruiseSeconds": 1800
+  },
+  "scorer": {
+    "dailyUsd": 5,
+    "wakeUsd": 0.75,
+    "dailyWakes": 60,
+    "sprintSeconds": 120,
+    "cruiseSeconds": 600
+  },
+  "challenger": {
+    "dailyUsd": 40,
+    "wakeUsd": 3,
+    "dailyWakes": 60,
+    "sprintSeconds": 300,
+    "cruiseSeconds": 900
+  },
+  "refiner": {
+    "dailyUsd": 15,
+    "wakeUsd": 1.5,
+    "dailyWakes": 60,
+    "sprintSeconds": 240,
+    "cruiseSeconds": 900
+  },
+  "merger": {
+    "dailyUsd": 2,
+    "wakeUsd": 0.25,
+    "dailyWakes": 60,
+    "sprintSeconds": 600,
+    "cruiseSeconds": 3600
+  },
+  "planner": {
+    "dailyUsd": 20,
+    "wakeUsd": 1.5,
+    "dailyWakes": 60,
+    "sprintSeconds": 300,
+    "cruiseSeconds": 3600
+  },
+  "ranker": {
+    "dailyUsd": 8,
+    "wakeUsd": 1,
+    "dailyWakes": 60,
+    "sprintSeconds": 240,
+    "cruiseSeconds": 1200
+  },
+  "tagger": {
+    "dailyUsd": 4,
+    "wakeUsd": 0.6,
+    "dailyWakes": 60,
+    "sprintSeconds": 600,
+    "cruiseSeconds": 3600
+  },
+  "wanderer": {
+    "dailyUsd": 40,
+    "wakeUsd": 3,
+    "dailyWakes": 60,
+    "sprintSeconds": 900,
+    "cruiseSeconds": 7200
+  },
+  "fetcher": {
+    "dailyUsd": 2,
+    "wakeUsd": 0.25,
+    "dailyWakes": 60,
+    "sprintSeconds": 300,
+    "cruiseSeconds": 1800
+  },
+  "indexer": {
+    "dailyUsd": 2,
+    "wakeUsd": 0.25,
+    "dailyWakes": 60,
+    "sprintSeconds": 300,
+    "cruiseSeconds": 1800
+  },
+  "probe": {
+    "dailyUsd": 2,
+    "wakeUsd": 0.25,
+    "dailyWakes": 60,
+    "sprintSeconds": 60,
+    "cruiseSeconds": 600
+  },
+  "drafter": {
+    "dailyUsd": 40,
+    "wakeUsd": 8,
+    "dailyWakes": 12,
+    "sprintSeconds": 900,
+    "cruiseSeconds": 3600
+  }
+}

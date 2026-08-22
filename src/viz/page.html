@@ -1,0 +1,1209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Idea Refinery — viewer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 2h12L9.5 8.5V13L6.5 14V8.5Z' fill='%23B05E10'/%3E%3C/svg%3E">
+<style>
+/* ---- tokens: light is the default, dark redefines the same names ---- */
+:root {
+  --paper: #F3F4EF;
+  --panel: #ECEEE6;
+  --card: #FDFDFB;
+  --ink: #22271F;
+  --mute: #68705F;
+  --faint: #9AA18F;
+  --line: #D9DCD0;
+  --line-soft: #E4E6DC;
+  --heat: #B05E10;
+  --heat-soft: #F3E2CC;
+  --live: #3A6B44;
+  --err: #9E3123;
+  --err-soft: #F0DAD5;
+  --link: #2E5D74;
+  --digest: #55603F;
+  --font-ui: "Avenir Next", "Avenir", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Futura", "Avenir Next Condensed", "Avenir Next", system-ui, sans-serif;
+  --font-prose: "Charter", "Iowan Old Style", "Georgia", serif;
+  --font-mono: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161913;
+    --panel: #1C2019;
+    --card: #232822;
+    --ink: #E2E6D9;
+    --mute: #98A18C;
+    --faint: #6A7261;
+    --line: #333930;
+    --line-soft: #2A2F27;
+    --heat: #E0913C;
+    --heat-soft: #3D2E1B;
+    --live: #7FB289;
+    --err: #D4705F;
+    --err-soft: #40241E;
+    --link: #7FAFC6;
+    --digest: #9AA672;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-x: hidden;
+}
+a { color: var(--link); }
+:focus-visible { outline: 2px solid var(--heat); outline-offset: 1px; }
+
+/* ---- masthead ---- */
+/* body is a column flexbox now so masthead/tabs can wrap to two lines at
+   narrow widths without a hardcoded height number going stale below */
+#masthead {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 16px 8px;
+  border-bottom: 2px solid var(--ink);
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.wordmark .sub {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--mute);
+  margin-left: 6px;
+}
+#standing {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-left: auto;
+  min-width: 0;
+}
+.chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 8px 2px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.chip.live { color: var(--live); border-color: var(--live); }
+.chip.warn { color: var(--heat); border-color: var(--heat); }
+.chip.err  { color: var(--err); border-color: var(--err); }
+#read-only { color: var(--mute); }
+#repo-path, #freshness {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 34ch;
+}
+
+/* ---- tabs ---- */
+#tabs {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+#tabs a {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--mute);
+  padding: 6px 10px 5px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+#tabs a:hover { color: var(--ink); }
+#tabs a.active { color: var(--ink); border-bottom-color: var(--heat); }
+
+/* ---- frame ---- */
+main {
+  display: grid;
+  /* the rail narrows smoothly down to a laptop half-screen; below that
+     it holds at 220px and the funnel board takes the horizontal scroll
+     inside its own container instead */
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 30vw, 336px);
+  gap: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+#left { min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+#rail {
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--panel);
+}
+.rail-head {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+  padding: 8px 12px 4px;
+}
+
+/* ---- funnel board ---- */
+#board {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  overflow-x: auto;
+  flex: 1;
+  align-items: stretch;
+}
+.col {
+  flex: 0 0 176px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-top: 3px solid var(--line);
+  background: transparent;
+}
+.col.group-operator { border-top-color: var(--heat); }
+.col.group-out { border-top-style: dashed; }
+.col-gap { flex: 0 0 4px; border-left: 1px solid var(--line); margin: 12px 2px; }
+.col > header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 2px 6px;
+}
+.col .eyebrow {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--heat);
+}
+.col.group-out .eyebrow { color: var(--faint); }
+.col h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.col .stage {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+.col .count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+}
+.col.muted h2 { color: var(--mute); }
+.cards { overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
+.empty {
+  color: var(--faint);
+  font-size: 11px;
+  font-style: italic;
+  padding: 8px 2px;
+  margin: 0;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 6px 8px 7px;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+.card:hover { border-color: var(--mute); }
+.card.hot { animation: cool 2.4s ease-out; }
+@keyframes cool {
+  0%   { background: var(--heat-soft); border-color: var(--heat); }
+  100% { background: var(--card); border-color: var(--line); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card.hot { animation: none; }
+  * { transition: none !important; }
+}
+.card-top { display: flex; align-items: baseline; gap: 5px; }
+.card .id { font-family: var(--font-mono); font-size: 11px; color: var(--mute); }
+.card .pin { color: var(--heat); flex: 0 0 auto; position: relative; top: 1px; }
+.card .score {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+.card .title {
+  margin: 3px 0 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-meta { display: flex; gap: 8px; font-family: var(--font-mono); font-size: 10px; color: var(--faint); }
+.card.dim { opacity: 0.62; }
+.card.dim .score { font-weight: 400; color: var(--mute); }
+
+/* ---- document and artifact views ---- */
+#view { flex: 1; overflow-y: auto; padding: 14px 22px 40px; }
+.view-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.view-head .back { font-size: 12px; text-decoration: none; }
+.view-head h1 {
+  font-family: var(--font-prose);
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+}
+.view-head .doc-id { font-family: var(--font-mono); font-size: 13px; color: var(--heat); }
+.chip-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 10px; align-items: center; }
+.notice { color: var(--mute); font-style: italic; padding: 14px 2px; }
+
+.score-panel {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 10px 14px;
+  margin: 10px 0 14px;
+  max-width: 560px;
+}
+.score-big { font-family: var(--font-mono); font-size: 30px; font-weight: 700; line-height: 1; }
+.score-big small { display: block; font-size: 9px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); margin-top: 4px; font-family: var(--font-ui); }
+.axes { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 18px; }
+.axis { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+.axis .ax-name { flex: 0 0 6ch; color: var(--mute); font-family: var(--font-mono); font-size: 10px; }
+.axis .meter { flex: 1; height: 5px; background: var(--line-soft); border-radius: 2px; overflow: hidden; }
+.axis .meter i { display: block; height: 100%; background: var(--live); }
+.axis .meter i.low { background: var(--err); }
+.axis b { font-family: var(--font-mono); font-size: 10px; font-weight: 600; flex: 0 0 1ch; }
+.sources-fold { margin: 8px 0 4px; font-size: 12px; }
+.sources-fold summary { cursor: pointer; color: var(--mute); }
+.sources-fold a { display: block; font-family: var(--font-mono); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90ch; }
+
+/* the refinery's writing renders in serif — the chrome stays sans/mono */
+.prose {
+  font-family: var(--font-prose);
+  font-size: 14.5px;
+  line-height: 1.62;
+  max-width: 76ch;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 { font-family: var(--font-prose); line-height: 1.3; margin: 1.3em 0 0.4em; }
+.prose h1 { font-size: 19px; }
+.prose h2 { font-size: 16px; border-bottom: 1px solid var(--line); padding-bottom: 3px; }
+.prose h3 { font-size: 14.5px; }
+.prose p { margin: 0.55em 0; }
+.prose code { font-family: var(--font-mono); font-size: 0.85em; background: var(--panel); border: 1px solid var(--line-soft); border-radius: 2px; padding: 0 3px; }
+.prose pre { background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 8px 10px; overflow-x: auto; }
+.prose pre code { background: none; border: none; padding: 0; }
+.prose blockquote { margin: 0.7em 0; padding: 2px 12px; border-left: 3px solid var(--heat); color: var(--mute); }
+.prose table { display: block; overflow-x: auto; border-collapse: collapse; font-family: var(--font-ui); font-size: 12px; max-width: 100%; }
+.prose th, .prose td { border: 1px solid var(--line); padding: 4px 8px; text-align: left; vertical-align: top; }
+.prose th { font-family: var(--font-display); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--panel); }
+.prose img { max-width: 100%; }
+.prose hr { border: none; border-top: 1px solid var(--line); }
+
+/* ---- comment thread ---- */
+#thread { max-width: 76ch; margin-top: 18px; }
+.thread-head {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+  border-top: 2px solid var(--ink);
+  padding-top: 8px;
+}
+.comment { border-left: 3px solid var(--faint); padding: 4px 0 4px 14px; margin: 14px 0; }
+.comment-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.comment-head .who { font-weight: 600; font-size: 12px; }
+.comment-head .when { font-family: var(--font-mono); font-size: 10px; color: var(--faint); }
+.comment-tag {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 7px;
+  padding: 0 7px;
+}
+.comment .prose { font-size: 13.5px; }
+.comment--challenger { border-left-color: var(--err); }
+.comment--challenger .comment-tag { color: var(--err); border: 1px solid var(--err); }
+.comment--digest { border-left-style: dashed; border-left-color: var(--digest); }
+.comment--digest .comment-tag { color: var(--digest); border: 1px solid var(--digest); }
+.comment--overseer { border-left-color: var(--heat); background: linear-gradient(to right, var(--heat-soft), transparent 60%); }
+.comment--overseer .comment-tag { color: var(--heat); border: 1px solid var(--heat); }
+
+/* ---- artifact listings ---- */
+.file-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; max-width: 900px; }
+.file-card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 8px 10px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.file-card:hover { border-color: var(--mute); }
+.file-card .fname { font-family: var(--font-mono); font-size: 11px; color: var(--link); }
+.file-card .fstatus { font-size: 11.5px; color: var(--mute); margin-top: 4px; }
+
+/* ---- mail ---- */
+.mail-recipient { margin-bottom: 18px; max-width: 76ch; }
+.mail-recipient > h2 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 3px;
+}
+.mail-pair { margin: 8px 0 14px; }
+.mail-pair-head { display: flex; align-items: baseline; gap: 8px; font-size: 12px; }
+.mail-pair-head .route { font-family: var(--font-mono); color: var(--mute); }
+.unread {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--heat);
+  border: 1px solid var(--heat);
+  border-radius: 8px;
+  padding: 0 6px;
+}
+.mail-block { border-left: 3px solid var(--line); padding: 3px 0 3px 12px; margin: 8px 0; }
+.mail-block.directive { border-left-color: var(--heat); background: linear-gradient(to right, var(--heat-soft), transparent 65%); }
+.mail-block-head { display: flex; align-items: baseline; gap: 8px; }
+.mail-block-head .from { font-weight: 600; font-size: 12px; }
+.mail-block-head .when { font-family: var(--font-mono); font-size: 10px; color: var(--faint); }
+.hops {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--mute);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 5px;
+}
+.mail-block .prose { font-size: 13px; }
+
+/* ---- agent rail ---- */
+#agents { overflow-y: auto; flex: 0 1 auto; max-height: 58%; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.agent { padding: 5px 12px 6px; border-top: 1px solid var(--line-soft); }
+.agent:first-of-type { border-top: none; }
+.a-line1 { display: flex; align-items: baseline; gap: 7px; }
+.a-name { font-weight: 600; font-size: 12px; }
+.a-tier { font-family: var(--font-mono); font-size: 10px; color: var(--faint); }
+.a-state { font-family: var(--font-mono); font-size: 10px; margin-left: auto; }
+.a-state::before { content: "●"; font-size: 8px; margin-right: 4px; position: relative; top: -1px; }
+.a-state.awake { color: var(--live); }
+.a-state.dozing { color: var(--heat); }
+.a-state.asleep { color: var(--faint); }
+.a-wake { font-family: var(--font-mono); font-size: 10px; color: var(--mute); min-width: 7ch; text-align: right; }
+.a-line2 { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+.bar {
+  flex: 1;
+  height: 5px;
+  background: var(--line-soft);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar .fill { height: 100%; background: var(--live); border-radius: 2px; }
+.bar .fill.high { background: var(--heat); }
+.bar .fill.over { background: var(--err); }
+.a-nums { font-family: var(--font-mono); font-size: 10px; color: var(--mute); white-space: nowrap; }
+.a-err {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--err);
+  border: 1px solid var(--err);
+  border-radius: 8px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+/* ---- pulse ---- */
+#pulse { flex: 1; overflow-y: auto; padding-bottom: 10px; }
+.p-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 2px 12px;
+  font-size: 11px;
+}
+.p-row.hot { animation: pulsecool 2.4s ease-out; }
+@keyframes pulsecool {
+  0% { background: var(--heat-soft); }
+  100% { background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .p-row.hot { animation: none; } }
+.p-t { font-family: var(--font-mono); font-size: 10px; color: var(--faint); flex: 0 0 7.5ch; }
+.p-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 5px;
+  flex: 0 0 auto;
+}
+.p-hash { font-family: var(--font-mono); font-size: 10px; color: var(--heat); flex: 0 0 auto; }
+.p-text { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.p-none { color: var(--faint); font-style: italic; padding: 8px 12px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<header id="masthead">
+  <div class="wordmark">The Idea Refinery<span class="sub">viewer</span></div>
+  <div id="standing">
+    <span id="refinery-state" class="chip">connecting</span>
+    <span id="stop-chip" class="chip warn" hidden></span>
+    <span id="read-only">Read-only. Changes happen in Claude Code.</span>
+    <code id="repo-path" title=""></code>
+    <span id="freshness" title="Time of the last successful fetch"></span>
+  </div>
+</header>
+
+<nav id="tabs">
+  <a href="#board" data-tab="board">Board</a>
+  <a href="#ranked" data-tab="ranked">Ranked</a>
+  <a href="#themes" data-tab="themes">Themes</a>
+  <a href="#plans" data-tab="plans">Plans</a>
+  <a href="#digests" data-tab="digests">Digests</a>
+  <a href="#mail" data-tab="mail">Mail</a>
+</nav>
+
+<main>
+  <div id="left">
+    <div id="board" aria-label="funnel board"></div>
+    <div id="view" hidden></div>
+  </div>
+  <aside id="rail">
+    <div class="rail-head">Sub-agents</div>
+    <div id="agents"></div>
+    <div class="rail-head">Pulse</div>
+    <div id="pulse"></div>
+  </aside>
+</main>
+
+<script id="viz-pure">
+// Pure helpers, no DOM access. Kept in their own block so the test suite can
+// execute exactly this code (extracted by the block's id) against fixtures.
+(function (exports) {
+  "use strict";
+
+  function escapeHtml(s) {
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  // "4m ago" from an ISO stamp; honest about the absence of one.
+  function relTime(iso, nowMs) {
+    if (!iso) return "never";
+    const then = Date.parse(iso);
+    if (Number.isNaN(then)) return "never";
+    const s = Math.max(0, Math.floor(((nowMs ?? Date.now()) - then) / 1000));
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+    return `${Math.floor(s / 86400)}d ago`;
+  }
+
+  function fmtUsd(n) {
+    const v = Number(n) || 0;
+    return v >= 10 ? `$${v.toFixed(0)}` : `$${v.toFixed(2)}`;
+  }
+
+  // logs/scorer.jsonl -> scorer; anything else -> null.
+  function agentFromLogPath(p) {
+    const m = String(p ?? "").match(/^logs\/([a-z][a-z0-9_-]*)\.(jsonl|err)$/);
+    return m ? m[1] : null;
+  }
+
+  // awake / dozing / asleep, from tmux windows + STOP files + today's caps.
+  // "dozing" is loop.sh's own word: the loop is up but over a daily cap.
+  function agentState({ name, tmux, stop, caps, wakesToday, costToday }) {
+    const stopped = stop.includes("STOP") || stop.includes(`STOP.${name}`);
+    const windows = (tmux && tmux.windows) || [];
+    const inTmux =
+      tmux && tmux.state === "running" &&
+      windows.some((w) => String(w).split(":")[1] === name);
+    if (!inTmux || stopped) return "asleep";
+    if (caps && ((wakesToday ?? 0) >= caps.dailyWakes || (costToday ?? 0) >= caps.dailyUsd)) {
+      return "dozing";
+    }
+    return "awake";
+  }
+
+  // The masthead's one-phrase answer to "is the refinery running".
+  function refineryPhrase(tmux) {
+    if (!tmux || tmux.state === "unknown") return "state unknown — tmux not found";
+    if (tmux.state !== "running") return "down";
+    return tmux.profile ? `running ${tmux.profile}` : "running";
+  }
+
+  // Splits an idea body at its "## Comments" heading. The part before is
+  // the document; the part after is the thread.
+  function splitIdeaBody(body) {
+    const match = String(body ?? "").match(/^## Comments\s*$/m);
+    if (!match) return { prose: String(body ?? ""), thread: "" };
+    return {
+      prose: body.slice(0, match.index),
+      thread: body.slice(match.index + match[0].length),
+    };
+  }
+
+  // Thread entries open with "### <agent> — <stamp>". Agent names are
+  // lower-case single tokens, so an h3 inside a comment's own markdown
+  // ("### Named gaps …") never starts a new entry.
+  function parseComments(thread) {
+    const re = /^### ([a-z][a-z0-9_-]*) — (.+)$/gm;
+    const out = [];
+    let match;
+    let prev = null;
+    while ((match = re.exec(thread)) !== null) {
+      if (prev) prev.body = thread.slice(prev.bodyStart, match.index).trim();
+      prev = { author: match[1], stamp: match[2].trim(), bodyStart: match.index + match[0].length };
+      out.push(prev);
+    }
+    if (prev) prev.body = thread.slice(prev.bodyStart).trim();
+    for (const entry of out) delete entry.bodyStart;
+    return out;
+  }
+
+  exports.escapeHtml = escapeHtml;
+  exports.relTime = relTime;
+  exports.fmtUsd = fmtUsd;
+  exports.agentFromLogPath = agentFromLogPath;
+  exports.agentState = agentState;
+  exports.refineryPhrase = refineryPhrase;
+  exports.splitIdeaBody = splitIdeaBody;
+  exports.parseComments = parseComments;
+})(globalThis.VizPure = {});
+</script>
+
+<script src="/assets/marked.js"></script>
+
+<script id="viz-markdown">
+// Everything an agent wrote is untrusted. This block owns the one path any
+// of it takes to the screen: marked, configured so raw HTML renders as
+// escaped text, unsafe link protocols are dropped, and images become plain
+// text — nothing a document says can execute or fetch. The test suite runs
+// exactly this block against the real library.
+(function (exports) {
+  "use strict";
+
+  function safeHref(href) {
+    return /^(https?:|mailto:|#|\/)/i.test(String(href ?? "").trim());
+  }
+
+  function configureMarked(markedNs, escapeHtml) {
+    markedNs.use({
+      gfm: true,
+      renderer: {
+        html(token) {
+          const raw = typeof token === "string" ? token : (token && (token.text ?? token.raw)) ?? "";
+          return escapeHtml(raw);
+        },
+        link(token) {
+          let inner;
+          try {
+            inner = this.parser.parseInline(token.tokens);
+          } catch {
+            inner = escapeHtml(token.text);
+          }
+          if (!safeHref(token.href)) return inner;
+          const title = token.title ? ` title="${escapeHtml(token.title)}"` : "";
+          return `<a href="${escapeHtml(token.href)}"${title} rel="noopener">${inner}</a>`;
+        },
+        image(token) {
+          return escapeHtml(`[image: ${token.text || token.href}]`);
+        },
+      },
+    });
+    return markedNs;
+  }
+
+  function renderMarkdownSafe(markedNs, src) {
+    return markedNs.parse(String(src ?? ""));
+  }
+
+  exports.safeHref = safeHref;
+  exports.configureMarked = configureMarked;
+  exports.renderMarkdownSafe = renderMarkdownSafe;
+})(globalThis.VizMarkdown = {});
+</script>
+
+<script>
+"use strict";
+const {
+  escapeHtml, relTime, fmtUsd, agentFromLogPath, agentState, refineryPhrase,
+  splitIdeaBody, parseComments,
+} = globalThis.VizPure;
+const { configureMarked, renderMarkdownSafe, safeHref } = globalThis.VizMarkdown;
+
+const markedNs = window.marked;
+if (markedNs) configureMarked(markedNs, escapeHtml);
+const renderMd = (src) =>
+  markedNs ? renderMarkdownSafe(markedNs, src) : `<pre>${escapeHtml(src)}</pre>`;
+
+const BUCKET_COLUMNS = [
+  { key: "0-seeds", label: "seeds", stage: "0", group: "funnel" },
+  { key: "1-scored", label: "scored", stage: "1", group: "funnel" },
+  { key: "2-contested", label: "contested", stage: "2", group: "funnel" },
+  { key: "3-refined", label: "refined", stage: "3", group: "funnel" },
+  { key: "4-ranked", label: "ranked", stage: "4", group: "funnel" },
+  { key: "operator-selected", label: "selected", group: "operator", eyebrow: "operator", pin: true },
+  { key: "operator-rejected", label: "rejected", group: "operator", eyebrow: "operator", muted: true },
+  { key: "killed", label: "killed", group: "out", eyebrow: "out", muted: true },
+  { key: "archive", label: "archive", group: "out", eyebrow: "out", muted: true },
+];
+
+const AXES = ["pain", "wtp", "inbound", "build", "cogs", "density", "risk"];
+
+const PIN_SVG =
+  '<svg class="pin" width="10" height="10" viewBox="0 0 16 16" aria-label="pinned by the operator"><path d="M9.5 1 15 6.5l-3 .8-2.4 2.4.4 3.8-2.6-2.6L3 15.3 2.7 15l4.4-4.4L4.5 8l3.8.4L10.7 6z" fill="currentColor"/></svg>';
+
+const FULL_REFRESH_FLOOR_MS = 60_000;
+const PULSE_CAP = 120;
+
+const state = {
+  snapshot: null,         // last /api/state body
+  agents: new Map(),      // name -> /api/agent body
+  cardHome: new Map(),    // idea id -> bucket key, for arrival detection
+  hotIds: new Set(),      // ids to flash on next board render
+  pulse: [],              // { t, kind: "event"|"commit", tag, hash, text, hot }
+  seenHashes: new Set(),
+  commitsPrimed: false,
+  disconnected: false,
+};
+
+const $ = (id) => document.getElementById(id);
+
+async function getJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url}: ${res.status}`);
+  return res.json();
+}
+
+// ---- masthead -------------------------------------------------------------
+
+function renderMasthead() {
+  const chip = $("refinery-state");
+  const stopChip = $("stop-chip");
+  if (state.disconnected) {
+    chip.textContent = "viewer disconnected";
+    chip.className = "chip err";
+    return;
+  }
+  const snap = state.snapshot;
+  if (!snap) return;
+  const phrase = refineryPhrase(snap.tmux);
+  chip.textContent = phrase;
+  chip.className = "chip " + (phrase.startsWith("running") ? "live" : phrase === "down" ? "" : "warn");
+
+  const stops = snap.stop ?? [];
+  stopChip.hidden = stops.length === 0;
+  stopChip.textContent = stops.join(" ");
+
+  const pathEl = $("repo-path");
+  pathEl.textContent = snap.root ?? "";
+  pathEl.title = snap.root ?? "";
+}
+
+function stampFreshness() {
+  $("freshness").textContent = "as of " + new Date().toTimeString().slice(0, 8);
+}
+
+// ---- funnel board ---------------------------------------------------------
+
+function cardHtml(idea, col) {
+  const pinned = col.pin || /\bpinned\b/.test(idea.status ?? "");
+  const dim = col.muted ? " dim" : "";
+  const hot = state.hotIds.has(idea.id) ? " hot" : "";
+  const shortId = (idea.id ?? "").replace(/^idea-/, "#");
+  return `<article class="card${dim}${hot}" data-id="${escapeHtml(idea.id)}" tabindex="0" role="button" aria-label="${escapeHtml(idea.id)}">
+    <div class="card-top"><span class="id">${escapeHtml(shortId)}</span>${pinned ? PIN_SVG : ""}<span class="score">${escapeHtml(idea.score ?? "·")}</span></div>
+    <h3 class="title">${escapeHtml(idea.title ?? "(untitled)")}</h3>
+    <div class="card-meta"><span>${escapeHtml(idea.status ?? "")}</span><span>${escapeHtml(idea.owner ?? "")}</span></div>
+  </article>`;
+}
+
+function renderBoard() {
+  const snap = state.snapshot;
+  if (!snap) return;
+
+  // Arrival detection: an id that is new, or now lives in another bucket.
+  const nextHome = new Map();
+  for (const col of BUCKET_COLUMNS) {
+    for (const idea of snap.buckets[col.key] ?? []) nextHome.set(idea.id, col.key);
+  }
+  if (state.cardHome.size) {
+    for (const [id, bucket] of nextHome) {
+      if (state.cardHome.get(id) !== bucket) state.hotIds.add(id);
+    }
+  }
+  state.cardHome = nextHome;
+
+  const parts = [];
+  let prevGroup = null;
+  for (const col of BUCKET_COLUMNS) {
+    if (prevGroup && col.group !== prevGroup) parts.push('<div class="col-gap"></div>');
+    prevGroup = col.group;
+    const ideas = [...(snap.buckets[col.key] ?? [])].sort(
+      (a, b) => (Number(b.score) || 0) - (Number(a.score) || 0) || String(a.id).localeCompare(String(b.id)),
+    );
+    const cards = ideas.length
+      ? ideas.map((idea) => cardHtml(idea, col)).join("")
+      : '<p class="empty">empty</p>';
+    parts.push(`<section class="col group-${col.group}${col.muted ? " muted" : ""}" data-bucket="${col.key}">
+      <header>${col.eyebrow ? `<div><span class="eyebrow">${col.eyebrow}</span><h2>${col.label}</h2></div>` : `<span class="stage">${col.stage}</span><h2>${col.label}</h2>`}<span class="count">${ideas.length}</span></header>
+      <div class="cards">${cards}</div>
+    </section>`);
+  }
+  $("board").innerHTML = parts.join("");
+  state.hotIds.clear();
+}
+
+$("board").addEventListener("click", (ev) => {
+  const card = ev.target.closest(".card");
+  if (card) location.hash = `#${card.dataset.id}`;
+});
+$("board").addEventListener("keydown", (ev) => {
+  if (ev.key !== "Enter" && ev.key !== " ") return;
+  const card = ev.target.closest(".card");
+  if (card) {
+    ev.preventDefault();
+    location.hash = `#${card.dataset.id}`;
+  }
+});
+
+// ---- agent rail -----------------------------------------------------------
+
+function agentRowHtml(name) {
+  const snap = state.snapshot;
+  const caps = snap.caps[name];
+  const detail = state.agents.get(name);
+  const tier = (snap.tiers ?? {})[name] ?? "—";
+  const st = agentState({
+    name,
+    tmux: snap.tmux,
+    stop: snap.stop ?? [],
+    caps,
+    wakesToday: detail?.wakesToday,
+    costToday: detail?.costToday,
+  });
+  const lastWake = snap.agentLogs?.[name]?.loggedAt ?? null;
+  const cost = detail?.costToday ?? 0;
+  const wakes = detail?.wakesToday ?? 0;
+  const budget = caps?.dailyUsd ?? 0;
+  const pct = budget ? Math.min(100, (cost / budget) * 100) : 0;
+  const fillClass = pct >= 100 ? " over" : pct >= 75 ? " high" : "";
+  const errLines = detail?.errTail?.length ?? 0;
+  const errTitle = errLines ? escapeHtml(detail.errTail.slice(-3).join("\n")) : "";
+  return `<div class="agent" data-agent="${escapeHtml(name)}">
+    <div class="a-line1">
+      <span class="a-name">${escapeHtml(name)}</span>
+      <span class="a-tier">${escapeHtml(tier)}</span>
+      <span class="a-state ${st}">${st}</span>
+      <span class="a-wake" title="${escapeHtml(lastWake ?? "no wake logged")}">${relTime(lastWake)}</span>
+    </div>
+    <div class="a-line2">
+      <div class="bar" title="today's spend against caps.json dailyUsd"><div class="fill${fillClass}" style="width:${pct.toFixed(1)}%"></div></div>
+      <span class="a-nums">${wakes} wakes · ${fmtUsd(cost)}/${fmtUsd(budget)}</span>
+      ${errLines ? `<span class="a-err" title="${errTitle}">err ${errLines}</span>` : ""}
+    </div>
+  </div>`;
+}
+
+function renderAgents() {
+  const snap = state.snapshot;
+  if (!snap) return;
+  const names = Object.keys(snap.caps).filter((k) => k !== "cliVersion");
+  $("agents").innerHTML = names.length
+    ? names.map(agentRowHtml).join("")
+    : '<p class="p-none">caps.json lists no agents</p>';
+}
+
+// ---- pulse ----------------------------------------------------------------
+
+function pushPulse(entry) {
+  state.pulse.unshift(entry);
+  if (state.pulse.length > PULSE_CAP) state.pulse.length = PULSE_CAP;
+  renderPulse();
+}
+
+function renderPulse() {
+  if (!state.pulse.length) {
+    $("pulse").innerHTML = '<p class="p-none">nothing yet — commits and file events land here</p>';
+    return;
+  }
+  $("pulse").innerHTML = state.pulse
+    .map((p) => {
+      const t = p.t ? new Date(p.t).toTimeString().slice(0, 8) : "·";
+      const tag = p.kind === "commit"
+        ? `<span class="p-hash">${escapeHtml(p.hash)}</span>`
+        : `<span class="p-tag">${escapeHtml(p.tag)}</span>`;
+      return `<div class="p-row${p.hot ? " hot" : ""}"><span class="p-t">${t}</span>${tag}<span class="p-text" title="${escapeHtml(p.text)}">${escapeHtml(p.text)}</span></div>`;
+    })
+    .join("");
+  for (const p of state.pulse) p.hot = false;
+}
+
+async function refreshCommits({ markNew }) {
+  const body = await getJson("/api/commits");
+  const commits = body.commits ?? [];
+  if (!state.commitsPrimed) {
+    // The backlog: git order (newest first), no timestamps to claim.
+    for (const c of commits) state.seenHashes.add(c.hash);
+    state.pulse.push(
+      ...commits.map((c) => ({ t: null, kind: "commit", hash: c.hash, text: c.subject })),
+    );
+    state.commitsPrimed = true;
+    renderPulse();
+    return;
+  }
+  const fresh = commits.filter((c) => !state.seenHashes.has(c.hash));
+  for (const c of fresh.reverse()) {
+    state.seenHashes.add(c.hash);
+    pushPulse({ t: Date.now(), kind: "commit", hash: c.hash, text: c.subject, hot: markNew });
+  }
+}
+
+// ---- routing --------------------------------------------------------------
+
+function currentRoute() {
+  const h = decodeURIComponent(location.hash.replace(/^#/, ""));
+  if (!h || h === "board") return { view: "board" };
+  if (/^idea-\d{4}[a-z]?$/.test(h)) return { view: "idea", id: h };
+  if (["ranked", "themes", "plans", "digests", "mail"].includes(h)) return { view: h };
+  const m = h.match(/^(plans|digests)\/([^/]+)$/);
+  if (m) return { view: m[1], file: m[2] };
+  return { view: "board" };
+}
+
+function setActiveTab(route) {
+  const tab = route.view === "idea" ? "board" : route.view;
+  for (const a of document.querySelectorAll("#tabs a")) {
+    a.classList.toggle("active", a.dataset.tab === tab);
+  }
+}
+
+async function renderRoute() {
+  const route = currentRoute();
+  setActiveTab(route);
+  const showBoard = route.view === "board";
+  $("board").hidden = !showBoard;
+  $("view").hidden = showBoard;
+  if (showBoard) {
+    renderBoard();
+    return;
+  }
+  const view = $("view");
+  try {
+    if (route.view === "idea") view.innerHTML = await ideaViewHtml(route.id);
+    else if (route.view === "ranked")
+      view.innerHTML = await artifactDocHtml("RANKED.md", "Ranked", "RANKED.md does not exist yet — the ranker has not run.");
+    else if (route.view === "themes")
+      view.innerHTML = await artifactDocHtml("THEMES.md", "Themes", "THEMES.md does not exist yet — the tagger has not run.");
+    else if (route.view === "plans")
+      view.innerHTML = route.file
+        ? await artifactDocHtml(`plans/${route.file}`, route.file, "That plan is gone.", "#plans")
+        : await listingHtml("plans");
+    else if (route.view === "digests")
+      view.innerHTML = route.file
+        ? await artifactDocHtml(`digests/${route.file}`, route.file, "That digest is gone.", "#digests")
+        : await listingHtml("digests");
+    else if (route.view === "mail") view.innerHTML = await mailViewHtml();
+  } catch (err) {
+    view.innerHTML = `<p class="notice">could not load this view — ${escapeHtml(err.message)}</p>`;
+  }
+  view.scrollTop = 0;
+}
+
+// ---- idea document view ---------------------------------------------------
+
+const COMMENT_TAGS = { challenger: "challenge", digest: "digest", overseer: "operator" };
+
+function commentHtml(entry) {
+  const variant = COMMENT_TAGS[entry.author] ? ` comment--${entry.author}` : "";
+  const tag = COMMENT_TAGS[entry.author]
+    ? `<span class="comment-tag">${COMMENT_TAGS[entry.author]}</span>`
+    : "";
+  return `<div class="comment${variant}">
+    <div class="comment-head"><span class="who">${escapeHtml(entry.author)}</span>${tag}<span class="when">${escapeHtml(entry.stamp)}</span></div>
+    <div class="prose">${renderMd(entry.body)}</div>
+  </div>`;
+}
+
+function scorePanelHtml(fm) {
+  const breakdown = fm["score-breakdown"];
+  if (!fm.score && !breakdown) return "";
+  const axes = breakdown
+    ? AXES.map((axis) => {
+        const value = Number(breakdown[axis]) || 0;
+        return `<div class="axis"><span class="ax-name">${axis}</span><div class="meter"><i class="${value <= 2 ? "low" : ""}" style="width:${value * 20}%"></i></div><b>${value}</b></div>`;
+      }).join("")
+    : "";
+  return `<div class="score-panel">
+    <div class="score-big">${escapeHtml(fm.score ?? "·")}<small>of 100</small></div>
+    ${axes ? `<div class="axes">${axes}</div>` : ""}
+  </div>`;
+}
+
+async function ideaViewHtml(id) {
+  let doc;
+  try {
+    doc = await getJson(`/api/idea/${id}`);
+  } catch {
+    return `<p class="notice">${escapeHtml(id)} is not in any bucket.</p>`;
+  }
+  const fm = doc.fm ?? {};
+  const { prose, thread } = splitIdeaBody(doc.body);
+  const comments = parseComments(thread);
+  const chips = [
+    `<span class="chip">${escapeHtml(doc.bucket)}</span>`,
+    fm.status ? `<span class="chip">${escapeHtml(fm.status)}</span>` : "",
+    fm.owner ? `<span class="chip">owner ${escapeHtml(fm.owner)}</span>` : "",
+    fm.created ? `<span class="chip">created ${escapeHtml(fm.created)}</span>` : "",
+    fm.updated ? `<span class="chip">updated ${escapeHtml(fm.updated)}</span>` : "",
+    ...(fm.tags ?? []).map((t) => `<span class="chip warn">${escapeHtml(t)}</span>`),
+  ].filter(Boolean);
+  const sources = Array.isArray(fm.sources) && fm.sources.length
+    ? `<details class="sources-fold"><summary>sources (${fm.sources.length})</summary>${fm.sources
+        .map((s) =>
+          safeHref(s)
+            ? `<a href="${escapeHtml(s)}" rel="noopener">${escapeHtml(s)}</a>`
+            : `<a>${escapeHtml(s)}</a>`,
+        )
+        .join("")}</details>`
+    : "";
+  return `<div class="view-head">
+      <a class="back" href="#board">&larr; board</a>
+      <span class="doc-id">${escapeHtml(id)}</span>
+      <h1>${escapeHtml(fm.title ?? "(untitled)")}</h1>
+    </div>
+    <div class="chip-row">${chips.join("")}</div>
+    ${scorePanelHtml(fm)}
+    ${sources}
+    <div class="prose">${renderMd(prose)}</div>
+    <div id="thread">
+      <div class="thread-head">Comments · ${comments.length}</div>
+      ${comments.length ? comments.map(commentHtml).join("") : '<p class="notice">no comments yet.</p>'}
+    </div>`;
+}
+
+// ---- artifact views -------------------------------------------------------
+
+async function fetchArtifact(name) {
+  const res = await fetch(`/api/artifact/${encodeURIComponent(name)}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`artifact ${name}: ${res.status}`);
+  return res.text();
+}
+
+async function artifactDocHtml(name, title, missingText, backHash = "#board") {
+  const raw = await fetchArtifact(name);
+  const head = `<div class="view-head"><a class="back" href="${backHash}">&larr; back</a><h1>${escapeHtml(title)}</h1></div>`;
+  if (raw === null) return `${head}<p class="notice">${escapeHtml(missingText)}</p>`;
+  return `${head}<div class="prose">${renderMd(raw)}</div>`;
+}
+
+async function listingHtml(kind) {
+  const listing = await getJson("/api/artifacts");
+  const files = listing[kind] ?? [];
+  const head = `<div class="view-head"><a class="back" href="#board">&larr; board</a><h1>${kind === "plans" ? "Plans" : "Digests"}</h1></div>`;
+  if (!files.length) {
+    const missing = kind === "plans"
+      ? "no plans yet — the planner and drafter write them."
+      : "no digests yet — /idea-digest writes the first one.";
+    return `${head}<p class="notice">${missing}</p>`;
+  }
+  const cards = files
+    .map((f) => `<a class="file-card" href="#${kind}/${encodeURIComponent(f.name)}">
+        <span class="fname">${escapeHtml(f.name)}</span>
+        ${f.status ? `<div class="fstatus">Status: ${escapeHtml(f.status)}</div>` : ""}
+      </a>`)
+    .join("");
+  return `${head}<div class="file-cards">${cards}</div>`;
+}
+
+// ---- mail view ------------------------------------------------------------
+
+function mailBlockHtml(block) {
+  const directive = block.from === "overseer" || /^Directive:/.test(block.body ?? "");
+  return `<div class="mail-block${directive ? " directive" : ""}">
+    <div class="mail-block-head">
+      <span class="from">${escapeHtml(block.from ?? "?")}</span>
+      <span class="hops">hops ${escapeHtml(block.hops ?? 0)}</span>
+      <span class="when">${escapeHtml(block.at ?? "")}</span>
+      ${block.re ? `<span class="when">re: ${escapeHtml(block.re)}</span>` : ""}
+    </div>
+    <div class="prose">${renderMd(block.body)}</div>
+  </div>`;
+}
+
+async function mailViewHtml() {
+  const { mail } = await getJson("/api/mail");
+  const recipients = Object.keys(mail).sort();
+  const head = `<div class="view-head"><a class="back" href="#board">&larr; board</a><h1>Mail</h1></div>`;
+  if (!recipients.length) return `${head}<p class="notice">no mail yet — mail/ is empty.</p>`;
+  const sections = recipients.map((recipient) => {
+    const senders = Object.keys(mail[recipient]).sort();
+    const pairs = senders.map((sender) => {
+      const { unread, last } = mail[recipient][sender];
+      return `<div class="mail-pair">
+        <div class="mail-pair-head"><span class="route">${escapeHtml(sender)} &rarr; ${escapeHtml(recipient)}</span>${unread ? `<span class="unread">${unread} unread</span>` : ""}</div>
+        ${last.map(mailBlockHtml).join("")}
+      </div>`;
+    });
+    return `<div class="mail-recipient"><h2>to ${escapeHtml(recipient)}</h2>${pairs.join("")}</div>`;
+  });
+  return head + sections.join("");
+}
+
+// ---- data refresh ---------------------------------------------------------
+
+async function refreshState() {
+  state.snapshot = await getJson("/api/state");
+  renderMasthead();
+  if (currentRoute().view === "board") renderBoard();
+  renderAgents();
+}
+
+async function refreshAgent(name) {
+  try {
+    state.agents.set(name, await getJson(`/api/agent/${name}`));
+  } catch {
+    state.agents.delete(name);
+  }
+}
+
+async function refreshAllAgents() {
+  const names = Object.keys(state.snapshot?.caps ?? {}).filter((k) => k !== "cliVersion");
+  await Promise.all(names.map(refreshAgent));
+  renderAgents();
+}
+
+async function fullRefresh() {
+  try {
+    await refreshState();
+    await Promise.all([refreshAllAgents(), refreshCommits({ markNew: false })]);
+    state.disconnected = false;
+    renderMasthead();
+    stampFreshness();
+    const route = currentRoute();
+    if (route.view !== "board") await renderRoute();
+  } catch {
+    state.disconnected = true;
+    renderMasthead();
+  }
+}
+
+// ---- SSE ------------------------------------------------------------------
+
+function describeEvent(ev) {
+  return ev.path ?? ev.area;
+}
+
+function onSseEvent(ev) {
+  pushPulse({ t: Date.now(), kind: "event", tag: ev.area, text: describeEvent(ev), hot: true });
+  const work = [];
+  if (ev.area === "ideas" || ev.area === "state") work.push(refreshState());
+  if (ev.area === "agents") {
+    const name = agentFromLogPath(ev.path);
+    work.push(refreshState());
+    work.push(name ? refreshAgent(name).then(renderAgents) : refreshAllAgents());
+    work.push(refreshCommits({ markNew: true }));
+  }
+  if (ev.area === "ideas") work.push(refreshCommits({ markNew: true }));
+
+  // Re-render the open view when the event touches what it shows.
+  const route = currentRoute();
+  const viewCares =
+    (route.view === "idea" && ev.area === "ideas") ||
+    (route.view === "mail" && ev.area === "mail") ||
+    (["ranked", "themes", "plans", "digests"].includes(route.view) && ev.area === "artifact");
+  if (viewCares) work.push(renderRoute());
+
+  Promise.allSettled(work).then(stampFreshness);
+}
+
+function connectEvents() {
+  const es = new EventSource("/events");
+  es.onmessage = (msg) => {
+    try {
+      onSseEvent(JSON.parse(msg.data));
+    } catch {
+      // a malformed frame is dropped, the refresh floor covers the gap
+    }
+  };
+  es.onerror = () => {
+    state.disconnected = true;
+    renderMasthead();
+  };
+  es.onopen = () => {
+    state.disconnected = false;
+    renderMasthead();
+  };
+}
+
+// ---- boot -----------------------------------------------------------------
+
+window.addEventListener("hashchange", renderRoute);
+fullRefresh().then(renderRoute);
+connectEvents();
+setInterval(fullRefresh, FULL_REFRESH_FLOOR_MS);
+</script>
+
+</body>
+</html>

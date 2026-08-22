@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Write",
+      "Edit",
+      "Bash(node src/*)",
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git mv:*)",
+      "Bash(git log:*)",
+      "Bash(date:*)",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Read(.env)"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "claude-code-idea-refinery",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "bash scripts/check.sh",
+    "cycle": "bash scripts/cycle.sh",
+    "refinery": "bash scripts/refinery.sh",
+    "loop": "bash scripts/loop.sh",
+    "mail": "node src/mail.mjs",
+    "budget": "node src/budget.mjs",
+    "next-id": "node src/next-id.mjs",
+    "ranked": "node src/ranked.mjs",
+    "themes": "node src/themes.mjs",
+    "report": "node src/report.mjs",
+    "retrieve": "node src/retrieve.mjs",
+    "indexer": "node src/indexer.mjs",
+    "embed": "node src/embed.mjs",
+    "lint-buckets": "node src/lint-buckets.mjs",
+    "viz": "node src/viz/server.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "marked": "^18.0.10",
+    "sqlite-vec": "^0.1.9"
+  }
+}
