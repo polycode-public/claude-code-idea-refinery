@@ -75,9 +75,14 @@ That starts the probe's loop with a 5-second interval. `touch STOP.probe` stops 
 start of its next wake. A clean probe run proves `claude -p` invokes correctly, budget
 accounting writes to `logs/probe.jsonl`, and a wake's changes commit on schedule.
 
-**7. Start the refinery.**
+**7. Commit your setup, then start the refinery.** The refinery refuses to start over
+uncommitted changes to tracked files — the loops commit their own work, and your edits
+must not get tangled into a wake's commit. Your brief edit from step 1 and any re-pin
+from step 5 are still uncommitted at this point:
 
 ```
+git add CLAUDE.md caps.json
+git commit -m "chore: charter brief and setup"
 npm run -s refinery -- up
 ```
 
