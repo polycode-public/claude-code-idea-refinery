@@ -2,8 +2,7 @@
 // src/viz/server.mjs — the refinery viewer's read-only API.
 //
 // Every route is GET, every answer comes straight from the filesystem, and
-// nothing here writes, deletes or shells out to anything that mutates. See
-// PLAN_VIZ.md's "constitution" for the rules this file exists to keep.
+// nothing here writes, deletes or shells out to anything that mutates.
 
 import http from "node:http";
 import fs from "node:fs";
@@ -16,8 +15,7 @@ import { parseFrontMatter, fmField, fmTags } from "../front-matter.mjs";
 
 const DEFAULT_PORT = 4642;
 
-// Order matches the substrate list in PLAN_VIZ.md. A bucket not listed here
-// (there is none post-restructure) simply never appears in /api/state.
+// Lifecycle order. A bucket directory not listed here never appears in /api/state.
 const BUCKETS = [
   "0-seeds",
   "1-scored",
@@ -389,7 +387,7 @@ function readCommitUrlTemplate(root) {
 
 // Which panel a changed relative path belongs to, or null when it is
 // nothing the viewer watches (fs.watch reports every touch in a watched
-// tree, most of which are not on PLAN_VIZ's watch list).
+// tree, most of them irrelevant to any panel).
 function classifyChange(relPath) {
   const normalized = relPath.split(path.sep).join("/");
   if (normalized.startsWith("ideas-")) return "ideas";

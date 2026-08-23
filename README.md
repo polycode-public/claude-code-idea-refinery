@@ -1,4 +1,7 @@
-# idea-refinery-poc
+# The Idea Refinery
+
+A community project built on Anthropic's Claude Code. Not affiliated with or endorsed
+by Anthropic.
 
 The Idea Refinery is a set of Claude Code sub-agents running as background loops. Each
 loop wakes on an interval, does one narrow job on the funnel (seed, score, challenge,
@@ -8,7 +11,7 @@ log, and a human overseer session steers and has the final word.
 
 ## Operator skills
 
-Five levers, all pulled from an interactive Claude Code session except the last, which
+The levers, all pulled from an interactive Claude Code session except the last, which
 is the script the cycle skill wraps.
 
 - **`/refinery-run [up|status|down] [cruise]`** starts, inspects, or stops the
@@ -32,6 +35,9 @@ is the script the cycle skill wraps.
   each idea's stage and score, its consumer offering in plain customer language, and
   the shortest honest statement of what realising it still needs. Reach for it when
   you want to scan the whole corpus without opening every file.
+- **`/refinery-viz`** starts the read-only viewer and hands back its URL — the funnel
+  board, agent rail and pulse, live off the filesystem. The "Watching the refinery"
+  section below shows it.
 - **`npm run -s cycle -- [-n max_cycles] [agent ...]`** is the direct form of the
   funnel pass, no session needed. It wakes each agent once per cycle in funnel order
   and prints a progress line per cycle, stopping early once a cycle changes nothing.
