@@ -9,6 +9,31 @@ refine, plan, rank), commits its work, and sleeps. The sub-agents coordinate thr
 file-based mail. Every idea is a markdown document in this repository, and git is the
 audit log. A human overseer session steers and has the final word.
 
+## What one run looks like
+
+[`EXAMPLE.md`](EXAMPLE.md) logs a full session: every operator prompt, what the agents
+did in response, and the ideas at the end. Thirty wakes, $22.07, nineteen commits, one
+graduated idea with a ten-step realisation plan.
+
+The refusals carried more than the approvals.
+
+- The harvester read the first brief and declined to seed anything. It named which of
+  the three charter gates failed and cited an eleven-year-old post-mortem for why. The
+  reasoning went to the overseer as mail, so the refusal is on the record with its
+  sources.
+- A re-brief with a day-one fee seeded `idea-0001`. The scorer killed it at 61 on the
+  inbound-reachability gate rather than on the total. The demand evidence and the
+  go-to-market channel pointed at two different mechanisms.
+- An adapt directive seeded `idea-0002` from the same mechanism. It scored 68, then
+  went three rounds with the challenger, which found a live incumbent that the idea's
+  own market number depended on not existing. The refiner deleted the number instead of
+  defending it. `idea-0002` graduated.
+
+The run also found four bugs in this repository, all since fixed. The worst was the
+quiet one. An agent that cannot list a directory reports an empty bucket, exits clean
+and commits nothing, which on a continuous run reads as an idle funnel rather than a
+broken one.
+
 ## Operator skills
 
 You pull every lever below from an interactive Claude Code session, except the last,
@@ -162,6 +187,8 @@ before seeding or scoring something that already failed once.
   agent, spend per ranked idea, bucket counts, survival rates, kill reasons by rubric
   axis, funnel warnings, and mail volume.
 - `git log --oneline` — the audit trail. Every wake commits its own work.
+- [`EXAMPLE.md`](EXAMPLE.md) — a worked run end to end, for comparison against your
+  own.
 
 ## Watching the refinery
 

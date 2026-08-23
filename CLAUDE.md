@@ -71,6 +71,8 @@ Independently looping `claude -p` sub-agents seed, score, challenge, refine, spl
 and rank business ideas as markdown documents in a git repository. File-based mail coordinates
 them, and a human overseer session supervises.
 
+- [`EXAMPLE.md`](EXAMPLE.md) is a worked run of the whole funnel, logged prompt by
+  prompt. Read it to see what the agents actually produce before changing what they do.
 - `archive/idea-refinery-poc.md` is the source design and
   `archive/PLAN_IDEA_REFINERY.md` the delivered plan of record refined from it. Where
   the two disagree, the plan wins and says why. Delivered docs live in `archive/`.

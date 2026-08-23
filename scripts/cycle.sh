@@ -10,7 +10,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SESSION="refinery"
-DEFAULT_AGENTS=(harvester wanderer fetcher indexer scorer challenger refiner planner tagger merger ranker drafter)
+DEFAULT_AGENTS=(harvester wanderer fetcher indexer scorer challenger refiner tagger merger ranker planner drafter)
 
 if tmux has-session -t "$SESSION" 2>/dev/null; then
   echo "cycle.sh: tmux session '$SESSION' is running; stop the loops first (scripts/refinery.sh down)" >&2

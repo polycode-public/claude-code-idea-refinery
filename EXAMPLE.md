@@ -605,4 +605,289 @@ actively deflating is a decaying asset.
 Category 2B is wrong; Category 2B's floor is 3 million monthly UK users. One agent
 catching another's cited error is the behaviour the whole design exists to produce.
 
-*(Run in progress — the result follows.)*
+---
+
+## Three rounds of challenge and refine
+
+The challenger and the refiner went back and forth three times. Each round moved on
+fetched evidence rather than argument, and the exchange is the part of the run worth
+reading in full in the idea document itself.
+
+### Round 1: the refiner catches the challenger arguing both ways
+
+Holes 1 and 3 are the same variable pulled in opposite directions. The challenger priced
+the founder's exposure off the £18m statutory ceiling, then four paragraphs later priced
+the buyer's fear off the government deflating that same threat. Both cannot stand at
+full strength. If enforcement against low-risk small services really is rare, the legal
+reserve is small and hole 1 shrinks. If exposure is severe enough to need a large
+reserve, the fear is not decaying and hole 3 shrinks. The refiner said the Model would
+"state the trade rather than quietly taking the favourable half of each".
+
+On hole 1 it conceded the substance and rejected the conclusion. An insurance premium and
+a legal reserve are costs like any other, forecast and trued up annually. Discourse gives
+a 200-member community a $1,200 to $6,000 annual comparison band, so a four-figure legal
+line still leaves the platform cheaper. And the Velocio comparison does not transfer: he
+carried the duty as an unpaid volunteer with no budget line at all, while a platform
+collecting a forecast fee has by construction the thing he lacked. Then it marked its own
+limit. "It says the line can be funded, not that the tail is survivable."
+
+On hole 2 it accepted the narrowing. An admin migrating to a free host attaches their
+community to a provider that said on the record it has "no plans" to do anything.
+Shedding the label is free; being hosted by a provider that discharges the duty is the
+purchase. The claim moved from "we carry the duty" to "a provider that discharges it,
+ad-free, at cost".
+
+Most of all, it refused to fill four gaps from memory and opened fetch targets instead:
+the real cost of UK cyber cover for a named OSA provider, a per-check age-assurance
+price, a dated instance of any forum paying anyone for compliance relief, and who
+operates lfgss.com today.
+
+### Round 2: the challenger finds a live incumbent
+
+Gap 8 closed, and it changed the picture. LFGSS was not rescued for free. The Microcosm
+Collective CIC, company 16265268, incorporated 20 February 2025, verified on Companies
+House. Users formed it with named directors carrying "the legal risk and responsibility
+for running the service", and it took "a group of at least twenty people to replace
+Velocio". The money came from Open Collective: €23,262 raised, €16,535 held, a
+€15,699 annual budget against about €700/month hosting, from 291 contributors on €6/month
+and €12/year tiers.
+
+The challenger read it both ways against itself:
+
+- **Against its own earlier point.** The alternative is not free. It took a CIC,
+  directors accepting personal exposure, twenty volunteers and a five-figure fundraise.
+  That lift is precisely what the product sells relief from. And 291 people paying real
+  money into an ad-free, duty-carrying platform is the first observed willingness-to-pay
+  instance in the whole thread.
+- **A new objection.** The document's countable market leaned on "~300 orphaned Microcosm
+  communities". They are not orphaned. The platform is back under the CIC, which now
+  occupies the refined document's exact narrowed proposition at donation prices.
+
+Gap 4 closed with one precision worth keeping: no community is observed paying a
+commercial third party for compliance relief. What is observed is communities paying a
+community-owned nonprofit. "Collective cost-recovery is proven; the commercial variant of
+it remains unobserved."
+
+### Round 3: the refiner drops the market number, and the challenger closes
+
+The refiner removed "~300 orphaned Microcosm communities" from the body outright. That
+number cannot survive the CIC evidence and a fetched thread reading "It was saved!".
+
+It refused to settle the deciding question by argument: "I cannot settle it by argument
+and I will not settle it from memory." Whether the CIC takes communities from outside the
+existing Microcosm estate became gap 9, with three named routes to close it.
+
+Two precisions cut the adverse reading down. The €54/year figure is an average over
+voluntary donors, not a price, since 291 contributors fund the whole estate while most
+members pay nothing. And CIC capacity is unsourced both ways, with €16,535 held against a
+€15,699 annual budget being about one year of cover for the estate they already run. So
+"incumbent for the whole segment" is an inference, and the refined body labels it a risk.
+
+The digest rule fired here. The comment thread crossed its size threshold and the refiner
+wrote a `### digest` entry, so later wakes read the digest plus everything after it.
+Nothing was deleted.
+
+The challenger then tried all three routes itself before ruling:
+
+- **Companies House filing history, fetched.** CIC incorporation, two office changes, a
+  confirmation statement made 2026-02-04 "with no updates". No CIC annual report on file,
+  so the register cannot answer intake. One new fact extracted: the CIC is active into
+  2026, so the incumbent reading is current.
+- **Open Collective updates page, fetched: empty.** "No Updates" is the whole page.
+- **`microcosm.app` returned 502 twice, the LFGSS thread 403 again.** A search snippet
+  described microcosm.app as a platform "for non-profit communities", and the challenger
+  refused to weigh it: "a snippet on an unfetchable page is not evidence and I will not
+  weigh it."
+
+Then the ruling, and the reason it terminates:
+
+> What remains is a fetch list, not an argument [...] no line of argument I can construct
+> would substitute for the fetches.
+
+`challenge: resolved`. Three exchanges, no overseer intervention, ending because the two
+roles agreed the remaining questions are not disputes between them.
+
+---
+
+## A fourth bug: the planner cannot go first
+
+With the challenge resolved and the body refined, the idea moved to `ideas-3-refined/`.
+The planner then woke and wrote nothing:
+
+> **`RANKED.md`:** present but has zero rows [...] Step 2's gate fires: exit without
+> writing.
+
+`scripts/cycle.sh` runs the planner before the ranker. On a fresh generation `RANKED.md`
+starts empty, so the planner always no-ops on the first pass, and graduation needs steps
+the planner will not write until the ranker has published rows. It clears on the second
+cycle, so it is a slow start rather than a deadlock, and nothing says so.
+
+The planner also reported the permission problem more usefully than any other agent:
+
+> I could not enumerate `ideas-operator-selected/` or `ideas-3-refined/`. Bash is denied
+> in this mode, and `Read` on a directory returns `EISDIR`, so I have no listing tool.
+
+`Read` on a directory returning `EISDIR` is the concrete reason `Glob` is the right grant.
+Without Bash the agents have no listing capability at all.
+
+Running the ranker first cleared it.
+
+---
+
+## The steps
+
+The planner argued against the idea's own build plan, which was not something to expect.
+Its opening line: "the build itself is much smaller than the Model's delivery shape
+implies". Steps 1 and 2 are reads and emails, not code.
+
+1. **Settle gap 9 before spending anything.** Read the CIC's 46-page incorporation PDF at
+   Companies House. £0, an hour of reading. If it reads as hosting for non-profit
+   communities generally, this idea's segment is whoever the CIC turns away. If it reads
+   as the Microcosm estate only, the segment is open.
+2. **Ask the CIC directly, and email the closed forums the same week.** Not a sale: would
+   they pay a per-member annual fee to a company that carries the duty, and what do they
+   pay for hosting now. Two signed letters of intent gate everything from step 4.
+3. **Size the tail with one month of Ahrefs**, €27, or free tier if it covers the queries.
+4. **Stand up on Discourse multisite, not a custom stack.** Free, open source, runs on a
+   2 GB server, ships importers for phpBB3, vBulletin, XenForo, SMF, MyBB, IPBoard,
+   Vanilla and NodeBB. Hosting $24/month on Lightsail. This collapses the Model's
+   serverless multi-tenant build off the path to the first paying customer. The caveat is
+   carried rather than hidden: Discourse's own docs say the team "is unable to provide
+   multisite configuration support", and that unsupported sysadmin work is the real cost.
+5. **Incorporate**, £100, usually within 24 hours. This is what makes s.226(2) point at a
+   company rather than a person, and it is the difference between this and what Velocio
+   was carrying.
+6. **Get insurance quotes, and use the quoting process to close gap 7.** The written
+   question to each broker: does the wording respond to an Ofcom information notice?
+7. **Do the compliance work with Ofcom's own free toolkit** and publish its output. That
+   is the visible discharge of duty the offer narrowed down to.
+8. **Ship billing as annual invoices.** Stripe at 1.5% + 20p, about 28p per member per
+   year on a £5 fee. Stripe Identity at £1.25 per check closes gap 2 with a real number.
+9. **Migrate one community, in public**, and write it up. That write-up is the content
+   that meets the empty query surface, and one completed migration is the only reference
+   a second admin will care about.
+10. **Set the first fee from the actual forecast, publish the arithmetic, and true it up.**
+    The mechanism is the product's claim, so the arithmetic being visible is part of what
+    is on sale.
+
+Every cost is fetched. Two gaps are left explicitly open rather than papered over:
+whether any insurance wording names the Act, and whether Ofcom accepts a Stripe Identity
+check as highly effective.
+
+The operating model: about £80 to £100 a month pre-revenue plus £100 to incorporate;
+break-even at about 200 members for cash costs and about 800 with the compliance line in,
+"reachable in two to three quarters only if the outreach list in step 2 converts". On
+payback it says "~unknown, because cost recovery leaves no margin", and then says what
+would set it.
+
+---
+
+## Graduated
+
+```
+commit: ranker: rebuild, graduate idea-0002
+```
+
+`ideas-4-ranked/idea-0002-osa-compliant-community-home-for-forums.md`, `status: ranked`.
+
+**RANKED.md**
+
+| rank | id | title | score | status | one-liner |
+|---|---|---|---|---|---|
+| 1 | idea-0002 | Cost-recovery community platform that carries Online Safety Act duties for small UK forums | 68 | ranked | Volunteers running small UK forums now carry Online Safety Act duties personally. |
+
+The whole journey from the operator's first brief:
+
+```
+og-social brief          refused, no seed, all three gates fail
+  + a day-one fee        idea-0001 seeded
+                         scored 61, killed on the inbound-reachability gate
+  + adapt directive      idea-0002 seeded, parent idea-0001
+                         scored 68, both gates clear
+                         contested -> refined -> contested -> refined -> contested
+                         challenge: resolved
+                         ranked, planned, graduated
+```
+
+---
+
+## The realisation plan
+
+The drafter turns a graduated idea into a plan a build session could execute. It wrote
+`plans/PLAN_idea-0002-osa-compliant-community-home-for-forums.md`, 377 lines, marked
+"draft, unreviewed. A coordinator read gates any build."
+
+It opens by stating where the work goes: a fresh repository, `osa-community-home`. "It
+does not happen in this repository."
+
+**A constitution, taken from what survived the challenge.** No ads, no algorithmic feed,
+member-directed data sharing. Strict cost recovery with published arithmetic, and a rule
+that gives the mechanism teeth: "A fee the buyer cannot recompute from the published
+inputs is a bug." An append-only compliance ledger, because the Act's record-keeping duty
+is discharged by the ledger existing, so its integrity is a product invariant. The company
+and never an individual admin is the s.226(2) provider. Deterministic money: the fee is a
+pure function of a versioned input file, byte-for-byte reproducible.
+
+**Operator gates, kept separate from build phases.** The plan takes the planner's first
+instruction seriously and makes it a gate rather than a step. G1 gates all spend and
+outreach: read the CIC filing, email the CIC, email the closure-list admins, incorporate,
+one month of keyword sizing. Its exit condition is two signed letters of intent and a
+known CIC intake posture. G2 gates the first migration: broker quotes with the written
+Ofcom question, and a run of Ofcom's toolkit. "P1–P3 are code and cost nothing but time;
+they proceed in parallel with G1."
+
+**Six phases, four concurrent tracks**, each owning its own directory so they do not
+collide, with a model tier picked per track and one named shared file.
+
+**It made the decision the record left open.** On payback the idea document said
+"~unknown" and named what would settle it. The plan settles it:
+
+> The platform-operation line recovers running and operating time only; build time is not
+> amortised into fees. Reason: the published-arithmetic mechanism is the product's trust
+> claim, and a build-recovery line inflates year-one fees exactly when the comparison
+> against Discourse Pro must hold. Consequence, stated plainly: payback on build time is
+> indefinite and the founder carries it as equity.
+
+Then it says how to overturn it: "A coordinator who wants build recovery in the forecast
+overturns this one decision; the `fee-forecast.json` format takes it as just another
+line."
+
+**Six risks, each with a watch signal**, so a build session knows what to look at rather
+than what to worry about. The CIC opening intake, watched at three named places. Fear
+decay outrunning conversion, watched at the G1 reply rate. Insurance not responding to
+Ofcom action, watched at the broker's written answer, with the consequence wired into the
+code: "the legal-reserve line stays `unfilled` and every fee is `--provisional`". And on
+the severe-enforcement tail: "the residual tail is named, not priced, because no source
+prices it."
+
+**What it left out, and why it is sequencing rather than refusal.** The parent's custom
+serverless stack "returns as a cost optimisation when membership makes the single instance
+the wrong shape". Non-UK regimes wait on a buyer outside the UK. A second age-assurance
+method waits on the first pair being tested at G2.
+
+---
+
+## What the run cost
+
+**30 wakes, $22.07, 19 commits.** From an operator brief that was refused outright, through
+a child idea killed on the inbound gate, to a graduated grandchild with a ten-step
+realisation plan.
+
+The refinery's own output is in the repository: the idea document with its full comment
+thread, `RANKED.md`, `docs/` with the fetched sources, and `plans/` with the draft plan.
+Every stage is a commit, so `git log` is the audit trail.
+
+## What running it actually taught
+
+The refusals were more useful than the approvals.
+
+The harvester refused the first brief outright and cited an eleven-year post-mortem for
+why. The scorer killed the second idea on a gate rather than a total, and the reason it
+gave was a mismatch between the demand evidence and the channel that nobody had noticed.
+The challenger found a live incumbent in Companies House that the idea's own market number
+depended on not existing. The refiner deleted that market number from the body rather than
+defending it. The planner argued the build was smaller than the idea claimed.
+
+Four template bugs came out of a single run, and the worst was the quiet one. An agent that
+cannot list a directory reports an empty bucket, exits clean, and commits nothing. On a
+continuous run that reads as an idle funnel rather than a broken one.
