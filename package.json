@@ -19,7 +19,9 @@
     "embed": "node src/embed.mjs",
     "lint-buckets": "node src/lint-buckets.mjs",
     "viz": "node src/viz/server.mjs",
-    "test": "node --test"
+    "viz:shots": "node e2e/shots.mjs",
+    "test": "node --test",
+    "test:ui": "playwright test"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

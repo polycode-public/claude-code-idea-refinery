@@ -180,7 +180,7 @@ viewer never writes anything; changes still happen here, in Claude Code.
 Click any card and the board gives way to the document itself: front-matter chips,
 the rubric breakdown axis by axis, the prose, and the comment thread underneath.
 
-![An idea document open in the viewer: title, bucket and tag chips, a 69-of-100 score panel broken down across the seven rubric axes, and the cited prose below.](assets/viz/idea-view.png)
+![The top card of the ranked lane open in the viewer: title, bucket and tag chips, a 70-of-100 score panel broken down across the seven rubric axes, and the cited prose below.](assets/viz/idea-view.png)
 
 Both shots come from `npm run -s viz:shots`, which drives the real page through
 Playwright and overwrites `assets/viz/` in place. `npm run -s test:ui` runs the

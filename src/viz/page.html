@@ -870,9 +870,13 @@ function renderMasthead() {
   stopChip.hidden = stops.length === 0;
   stopChip.textContent = stops.join(" ");
 
+  // the header names the checkout, not the machine. The full path stays on
+  // the tooltip: screenshots of this page get published, and an absolute
+  // path carries a home directory into them.
   const pathEl = $("repo-path");
-  pathEl.textContent = snap.root ?? "";
-  pathEl.title = snap.root ?? "";
+  const root = snap.root ?? "";
+  pathEl.textContent = root.split("/").filter(Boolean).pop() ?? "";
+  pathEl.title = root;
 }
 
 function stampFreshness() {
