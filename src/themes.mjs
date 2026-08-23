@@ -7,8 +7,8 @@
 // JSON report: clusters (member ids and share of live ideas) plus every
 // pair of ideas whose pitch cosine exceeds PAIR_COSINE_THRESHOLD, with
 // their tag Jaccard. All agent-facing judgment (naming a cluster, deciding
-// what to do about a warning) stays with the tagger and merger agents —
-// this script only measures.
+// what to do about a warning) stays with the tagger and merger agents.
+// This script only measures.
 //
 // Usage: themes.mjs [--stub]
 
@@ -127,7 +127,7 @@ function tagJaccard(tagsA, tagsB) {
 
 // Average-linkage agglomerative clustering. Clusters start sorted by id and
 // every merge step picks the globally closest pair, breaking exact ties on
-// the pair's sorted member ids — so the result depends only on the id/vector
+// the pair's sorted member ids. The result depends only on the id/vector
 // pairing, never on the order ideas were read from disk.
 function clusterIds(ids, vectorById) {
   function linkageDistance(clusterA, clusterB) {
@@ -177,7 +177,7 @@ function clusterIds(ids, vectorById) {
   return clusters.map((members) => members.slice().sort());
 }
 
-// Integer percentages that sum to exactly 100: floor every share, then hand
+// Integer percentages that sum to exactly 100. Floor every share, then hand
 // the remaining points to the clusters with the largest fractional part
 // (ties broken by cluster order, which is already deterministic).
 function sharePercentages(sizes, total) {

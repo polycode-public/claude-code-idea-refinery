@@ -63,8 +63,8 @@ function tokenize(text) {
 // A per-token pseudo-random unit-ish vector, seeded from a hash of the
 // token. Summing these over a pitch's tokens (bag-of-words) and
 // normalising gives near-duplicate texts a high cosine similarity without
-// ever calling out to the network — the property themes.mjs's clustering
-// depends on when run with --stub.
+// calling the network. themes.mjs's clustering depends on that property
+// when run with --stub.
 function tokenVector(token) {
   const hash = crypto.createHash("sha256").update(token).digest();
   const vector = new Array(STUB_DIMENSIONS);

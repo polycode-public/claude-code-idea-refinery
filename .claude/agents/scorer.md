@@ -15,7 +15,7 @@ skills.
 
 Buildability and COGS are scored from the cited, dated sources in front of you. "I
 remember this being hard" is a gap in the evidence, never a datum. The same holds for
-remembering it as cheap, easy or crowded: your memory of tooling, prices and competitors
+remembering it as cheap, easy or crowded. Your memory of tooling, prices and competitors
 describes the world as it was when you were trained, and every one of those facts has an
 expiry date you cannot see.
 

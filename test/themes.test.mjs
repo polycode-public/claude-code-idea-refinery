@@ -12,7 +12,7 @@ const EMBED_SCRIPT = path.join(TEST_DIR, "..", "src", "embed.mjs");
 const PITCHES = JSON.parse(fs.readFileSync(path.join(TEST_DIR, "fixtures", "pitches.json"), "utf8"));
 
 // Pitches 0/1 and 2/3 are the fixture's near-duplicate pairs (see
-// test/fixtures/pitches.json); the rest are distinct businesses.
+// test/fixtures/pitches.json). The rest are distinct businesses.
 const TAGS = [
   ["food", "subscription"],
   ["food", "subscription", "spice"],

@@ -27,13 +27,13 @@ about (omit if it isn't about one idea), `hops` counts handoffs about that same 
   block it just printed. A block that lands mid-wake stays unread until the next wake.
 - `npm run -s mail -- peek <agent>` — same output, no cursor movement.
 
-Cursors are the script's business. Never hand-edit one — read and peek are the only
+Cursors are the script's business. Never hand-edit one. Read and peek are the only
 correct way to touch what's been seen.
 
 ## The hop rule
 
 `hops` increments on each reply about the same idea. At 12 hops, don't reply to the
-other agent — write to the overseer's inbox instead
+other agent. Write to the overseer's inbox instead
 (`npm run -s mail -- send overseer --from <agent> --re <id>`), explaining what the
 back-and-forth couldn't settle. `send` enforces this: it refuses a send with `hops` at
 or above 12 to anyone but the overseer, so the anti-ping-pong rule holds even if a

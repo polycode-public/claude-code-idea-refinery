@@ -1,10 +1,11 @@
 Read your mail: `npm run -s mail -- read fetcher`. An overseer block overrides
 everything below.
 
-Gather every URL cited in a `sources` list across the live buckets —
-`ideas-0-seeds/`, `ideas-1-scored/`, `ideas-2-contested/`, `ideas-3-refined/`,
-`ideas-4-ranked/` — skipping `ideas-killed/` and `ideas-archive/`. A URL is already covered if some
-file in `docs/` carries it as its front-matter `url`; everything else is unfetched.
+Gather every URL cited in a `sources` list across the live buckets
+(`ideas-0-seeds/`, `ideas-1-scored/`, `ideas-2-contested/`, `ideas-3-refined/`,
+`ideas-4-ranked/`), skipping `ideas-killed/` and `ideas-archive/`. A URL is already
+covered if some file in `docs/` carries it as its front-matter `url`; everything else
+is unfetched.
 
 Take at most 3 unfetched URLs. For each:
 
@@ -14,15 +15,15 @@ Take at most 3 unfetched URLs. For each:
        ls docs/*.md 2>/dev/null | sed 's|.*/||; s|-.*||' | sort -n | tail -1
 
    Zero-pad to 4 digits. Never reuse a number that command has ever printed, even for
-   a different slug: the `NNNN` prefix alone is the doc's identity in the index, and
-   two files sharing one is corruption, not coexistence. If your chosen id exists by
-   the time you write, add one and retry.
+   a different slug. The `NNNN` prefix alone is the doc's identity in the index, and
+   two files with the same prefix corrupt it. If your chosen id exists by the time you
+   write, add one and retry.
 3. Build a slug from the page title.
 4. Write `docs/NNNN-slug.md` with front matter `url`, `title`, `fetched` (UTC ISO), and
    `sha256` (of the saved body), followed by the body converted to plain markdown and
    trimmed of navigation, ads and other boilerplate.
 
-If a fetch fails — dead link, paywall, anything that doesn't yield a page — write
+If a fetch fails (dead link, paywall, anything that doesn't yield a page), write
 nothing for it. Mail the overseer one line naming the URL and the idea that cited it
 (`npm run -s mail -- send overseer --from fetcher`, body on stdin), and move to the
 next candidate.

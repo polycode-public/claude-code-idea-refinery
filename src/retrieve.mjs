@@ -83,7 +83,7 @@ function ftsQuery(query) {
   return tokens.map((token) => `"${token}"`).join(" OR ");
 }
 
-// Chunks don't carry a source of their own; it lives on the doc they
+// Chunks don't carry a source of their own. It lives on the doc they
 // belong to. Looked up once per leg call rather than joined into the
 // vec0 KNN query itself, since vec0's MATCH+k form doesn't reliably
 // compose with arbitrary extra predicates.
@@ -128,8 +128,8 @@ export function lexicalLeg(db, query, poolSize, scopes = null) {
   return filterByScope(rows, db, scopes).map((row) => row.chunk_id);
 }
 
-// Reciprocal rank fusion: each leg contributes 1/(RRF_K + rank) per chunk
-// id, ranks are 1-based, ids absent from a leg simply don't score there.
+// Reciprocal rank fusion. Each leg contributes 1/(RRF_K + rank) per chunk
+// id. Ranks are 1-based. An id absent from a leg simply doesn't score there.
 export function reciprocalRankFusion(rankedLists, k = RRF_K) {
   const scores = new Map();
   for (const list of rankedLists) {

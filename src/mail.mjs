@@ -134,7 +134,7 @@ function cmdSend(recipient, flags, body) {
 
   const re = flags.re ?? null;
   // Cursor arithmetic depends on strictly increasing timestamps within a
-  // sender file; two sends inside the same clock second must not collide,
+  // sender file. Two sends inside the same clock second must not collide,
   // or the reader's ">" comparison would silently treat the second as
   // already read.
   const previous = readBlocks(recipient, from);

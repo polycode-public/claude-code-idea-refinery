@@ -5,7 +5,7 @@ description: The idea document format, who may edit what and where, and how idea
 
 # Idea document
 
-One markdown file per idea, named `<id>-<slug>.md` — the id, a dash, and a short
+One markdown file per idea, named `<id>-<slug>.md`. That is the id, a dash, and a short
 kebab-case slug of the title (three to six words). The id alone is the key everywhere
 (mail `re:` lines, `parent` and `merged-into` links, the retrieval index); the slug is
 for humans reading a directory listing. The front matter carries machine state; body
@@ -68,10 +68,10 @@ The bucket directory is the write lock. Only the role listed below may edit `Ide
 Only the overseer moves a file in or out. Inside it, the normal stage cycle runs in
 place: the `status:` field carries the stage and the `owner:` field is the write lock
 that the bucket directory provides everywhere else. Every role treats a qualifying
-operator-selected idea as outranking its ordinary queue — the scorer re-scores it when
-its score is null or stale against the thread, the challenger contests it from
-`status: scored`, the refiner works it at `status: contested` with a resolved
-challenge, the planner maintains its steps, and the ranker includes it in `RANKED.md`
+operator-selected idea as outranking its ordinary queue. The scorer re-scores it when
+its score is null or stale against the thread. The challenger contests it from
+`status: scored`. The refiner works it at `status: contested` with a resolved
+challenge. The planner maintains its steps. The ranker includes it in `RANKED.md`
 marked `pinned` and sets `status: ranked` when it meets graduation without moving the
 file. The drafter treats a pinned, gate-clean, `status: ranked` idea exactly as if it
 were in `ideas-4-ranked/`.
@@ -106,5 +106,5 @@ provenance headers naming which doc each entry came from, and the absorbed doc m
 
 Once a `Comments` section passes roughly 20 entries or roughly 3,000 words, the refiner
 writes a `### digest` comment summarising the thread so far. From then on, a wake reads
-the digest plus everything after it, not the full history. Nothing is deleted — the
+the digest plus everything after it, not the full history. Nothing is deleted. The
 digest is a reading shortcut, not a replacement for the record.

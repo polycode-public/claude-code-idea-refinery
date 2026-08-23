@@ -58,10 +58,10 @@ in a comment which axes were weakest.
     from the Model section, not an axis; name the blocker.
 - At or above 65, challenge-tested and planned: the idea graduates to
   `ideas-4-ranked/`. Challenge-tested means at least one challenger critique exists
-  and the newest challenge marking reads `challenge: resolved` — an idea nobody has
-  contested has not passed the test, it has skipped it. Planned means the
+  and the newest challenge marking reads `challenge: resolved`. An idea nobody has
+  contested has not passed the test; it has skipped it. Planned means the
   `Steps to realise` section carries at least one numbered step; the seeded
-  placeholder is absence. Graduation moves the file with `git mv` — a copy that
+  placeholder is absence. Graduation moves the file with `git mv`. A copy that
   leaves the id in two buckets is corruption, and finding one is a mail to the
   overseer.
 - Between 40 and 65, or above 65 without a resolved challenge or without steps: the idea
@@ -69,7 +69,7 @@ in a comment which axes were weakest.
 
 ## The evidence rule
 
-Score every axis from a cited, dated source — never from memory of what used to be
+Score every axis from a cited, dated source, never from memory of what used to be
 true. If there's no current source for a claim an axis depends on, that axis scores low
 and the comment names the gap. A remembered fact about how something used to work is a
 reason to go find a current source, not a substitute for one.

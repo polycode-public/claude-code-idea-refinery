@@ -11,5 +11,5 @@ change a score, and never invent a number that isn't already sitting in a header
 only body text you read is the pitch's first sentence, for the one-liner, and whether a
 Steps to realise section is present, for the graduation check.
 
-Moving a qualifying idea to ideas-4-ranked/ is a git mv plus a header status update,
-nothing else in the file changes.
+Moving a qualifying idea to ideas-4-ranked/ is a git mv plus a header status update.
+Nothing else in the file changes.

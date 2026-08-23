@@ -24,7 +24,7 @@ A pinned idea in `ideas-operator-selected/` with `status: ranked` and a qualifyi
    every comment from the digest onward — and, where a claim needs its source,
    `npm run -s retrieve -- "<query>" -k 3` over the fetched library. The plan must
    answer the argument as it actually ended, not the pitch as it started. And it must
-   describe the record as it actually is: never narrate a challenge, concession or
+   describe the record as it actually is. Never narrate a challenge, concession or
    adjudication that did not happen. A flag nobody contested is written up as
    unadjudicated; a thin record is named thin, and the plan's own claims get held to
    the higher bar that thinness demands.
@@ -33,7 +33,7 @@ A pinned idea in `ideas-operator-selected/` with `status: ranked` and a qualifyi
    every section present:
    - Title, then: `Status: draft, unreviewed. A coordinator read gates any build.`
      Then the product in one paragraph, and the name of the fresh repository the build
-     would live in — the build never happens in this repository.
+     would live in. The build never happens in this repository.
    - **What the idea's record proves.** The cited case carried over: pain, buyer,
      price anchors, the challenges that were landed and conceded, kill-checks passed,
      and the gaps still named open. Citations travel with their claims.

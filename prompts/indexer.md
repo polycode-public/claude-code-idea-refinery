@@ -15,7 +15,7 @@ If the exit code was non-zero, mail the overseer the tail of the log
 (`npm run -s mail -- send overseer --from indexer`, the tail on stdin) naming what
 failed.
 
-The index is gitignored operational state, not something the refinery reviews in git —
-there is nothing to commit unless `indexer.mjs` itself says otherwise in its output.
+The index is gitignored operational state, not something the refinery reviews in git.
+There is nothing to commit unless `indexer.mjs` itself says otherwise in its output.
 
 Exit.

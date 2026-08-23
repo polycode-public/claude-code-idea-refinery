@@ -17,11 +17,11 @@
 // index time (sha256 of the body) and always skipped when that hash
 // matches what is already recorded, independent of --new-only. Ideas are
 // self-describing documents, not fetched sources, so they never get a
-// claude annotation — the annotation cap and --no-annotate apply to docs
+// claude annotation. The annotation cap and --no-annotate apply to docs
 // only.
 //
 // --no-annotate skips every `claude -p` call so the pipeline stays
-// deterministic and offline; tests always pass it. --stub is forwarded to
+// deterministic and offline. Tests always pass it. --stub is forwarded to
 // embed.mjs so tests never touch the network there either.
 
 import crypto from "node:crypto";
@@ -205,7 +205,7 @@ function splitOversizedSection(section) {
 
 // Greedily merges whole sections into a chunk until the target would be
 // exceeded, so a section that fits on its own is never split across chunk
-// boundaries; a section too big to fit alone is handed to
+// boundaries. A section too big to fit alone is handed to
 // splitOversizedSection instead.
 export function chunkSections(sections) {
   const chunks = [];
@@ -300,9 +300,9 @@ function hasTable(db, name) {
   return Boolean(db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?").get(name));
 }
 
-// The docs table predates the `source` column: an existing db from before
-// C6 has the table without it, so it is added by migration rather than in
-// the CREATE TABLE, defaulting existing rows to 'docs'.
+// The docs table predates the `source` column. An older db has the table
+// without it, so it is added by migration rather than in the CREATE
+// TABLE, defaulting existing rows to 'docs'.
 function ensureSourceColumn(db) {
   const columns = db.prepare("PRAGMA table_info(docs)").all();
   if (!columns.some((col) => col.name === "source")) {

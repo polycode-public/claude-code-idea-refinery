@@ -111,7 +111,7 @@ function buildFullFixture(cwd) {
 
   // Text-parseable kill: the final scorer comment names low axis scores
   // inline ("Pain (1)", "WTP (2)", ...), which is what real scorer prose
-  // does — the text path should win over the header breakdown.
+  // does. The text path should win over the header breakdown.
   write(
     cwd,
     "ideas-killed/idea-0020.md",
@@ -288,7 +288,7 @@ test("kill reasons prefer the comment's inline scores and fall back to score-bre
   const result = run(cwd, ["--date", "2026-08-21"]);
   assert.equal(result.status, 0);
 
-  // idea-0020's comment names pain/wtp/density/risk inline; idea-0021's
+  // idea-0020's comment names pain/wtp/density/risk inline. idea-0021's
   // comment names no digits at all, so build/cogs come from its header
   // score-breakdown instead.
   assert.match(result.stdout, /\| pain \| 1 \|/);

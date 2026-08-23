@@ -23,6 +23,9 @@
   --err-soft: #F0DAD5;
   --link: #2E5D74;
   --digest: #55603F;
+  --shadow-1: 0 1px 2px rgba(34, 39, 31, 0.10);
+  --shadow-2: 0 4px 14px rgba(34, 39, 31, 0.18);
+  --scrim: rgba(34, 39, 31, 0.45);
   --font-ui: "Avenir Next", "Avenir", "Segoe UI", system-ui, sans-serif;
   --font-display: "Futura", "Avenir Next Condensed", "Avenir Next", system-ui, sans-serif;
   --font-prose: "Charter", "Iowan Old Style", "Georgia", serif;
@@ -45,6 +48,9 @@
     --err-soft: #40241E;
     --link: #7FAFC6;
     --digest: #9AA672;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.45);
+    --shadow-2: 0 5px 16px rgba(0, 0, 0, 0.6);
+    --scrim: rgba(6, 8, 4, 0.62);
   }
 }
 
@@ -151,6 +157,7 @@ a { color: var(--link); }
 
 /* ---- frame ---- */
 main {
+  position: relative;
   display: grid;
   /* the rail narrows smoothly down to a laptop half-screen; below that
      it holds at 220px and the funnel board takes the horizontal scroll
@@ -181,31 +188,37 @@ main {
 /* ---- funnel board ---- */
 #board {
   display: flex;
-  gap: 8px;
-  padding: 10px 12px 12px;
+  gap: 10px;
+  padding: 12px 14px 14px;
   overflow-x: auto;
   flex: 1;
   align-items: stretch;
 }
 /* `display: flex` above outranks the hidden attribute's own display rule, so
-   without this the board keeps its share of #left while a document is open. */
+   without this the board keeps its share of #left while an artifact is open. */
 #board[hidden] { display: none; }
+/* each lane is a full-height surface; only .cards scrolls, so the header
+   stays put while cards move under it */
 .col {
-  flex: 0 0 176px;
+  flex: 0 0 224px;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  border-top: 3px solid var(--line);
-  background: transparent;
+  background: var(--panel);
+  border: 1px solid var(--line-soft);
+  border-top: 3px solid var(--ink);
+  border-radius: 6px;
 }
 .col.group-operator { border-top-color: var(--heat); }
-.col.group-out { border-top-style: dashed; }
-.col-gap { flex: 0 0 4px; border-left: 1px solid var(--line); margin: 12px 2px; }
+.col.group-out { border-style: dashed; border-top-width: 1px; }
+.col-gap { flex: 0 0 8px; }
 .col > header {
+  flex: 0 0 auto;
   display: flex;
   align-items: baseline;
-  gap: 6px;
-  padding: 5px 2px 6px;
+  gap: 7px;
+  padding: 8px 10px 7px;
+  border-bottom: 1px solid var(--line);
 }
 .col .eyebrow {
   display: block;
@@ -232,28 +245,38 @@ main {
 .col .count {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
+  line-height: 16px;
   color: var(--mute);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 7px;
 }
+.col.muted { background: transparent; }
 .col.muted h2 { color: var(--mute); }
-.cards { overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
+.cards { flex: 1 1 auto; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 7px; padding: 9px 9px 12px; }
 .empty {
   color: var(--faint);
   font-size: 11px;
   font-style: italic;
-  padding: 8px 2px;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+  padding: 14px 8px;
   margin: 0;
 }
 
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 3px;
-  padding: 6px 8px 7px;
+  border-radius: 5px;
+  padding: 7px 9px 8px;
   cursor: pointer;
-  transition: border-color 120ms ease;
+  box-shadow: var(--shadow-1);
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
 }
-.card:hover { border-color: var(--mute); }
+.card:hover { border-color: var(--heat); box-shadow: var(--shadow-2); transform: translateY(-1px); }
 .card.hot { animation: cool 2.4s ease-out; }
 @keyframes cool {
   0%   { background: var(--heat-soft); border-color: var(--heat); }
@@ -286,8 +309,72 @@ main {
 .card.dim { opacity: 0.62; }
 .card.dim .score { font-weight: 400; color: var(--mute); }
 
+/* ---- full-screen artifact layer ---- */
+/* covers the board and the rail; masthead and tabs stay visible above it */
+#view {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: var(--paper);
+}
+#view[hidden] { display: none; }
+#view-close { position: absolute; top: 10px; right: 16px; z-index: 2; }
+#view-body { position: absolute; inset: 0; overflow-y: auto; padding: 14px 28px 48px; }
+
+.layer-close {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 23px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--mute);
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+}
+.layer-close:hover { color: var(--ink); border-color: var(--heat); }
+
+/* an idea id in a report opens that idea's card */
+.idea-link { font-family: var(--font-mono); text-decoration: none; border-bottom: 1px dashed var(--link); }
+.idea-link:hover, .idea-link:focus-visible { border-bottom-style: solid; }
+
+/* ---- idea card overlay ---- */
+/* the document floats over the lanes (or over a report) on a scrim */
+#overlay { position: fixed; inset: 0; z-index: 40; display: flex; padding: 4vh 18px 5vh; }
+#overlay[hidden] { display: none; }
+#overlay-scrim { position: absolute; inset: 0; background: var(--scrim); }
+#overlay-sheet {
+  position: relative;
+  margin: 0 auto;
+  width: min(880px, 100%);
+  max-height: 100%;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: var(--shadow-2);
+  display: flex;
+  flex-direction: column;
+  animation: sheet-in 160ms ease-out;
+}
+@keyframes sheet-in { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) { #overlay-sheet { animation: none; } }
+#overlay-close { position: absolute; top: 10px; right: 12px; z-index: 2; }
+#overlay-body { overflow-y: auto; overscroll-behavior: contain; padding: 16px 26px 36px; }
+#overlay-body .view-head { padding-right: 30px; }
+
+/* a full-screen report gives its tables the whole width; running text
+   keeps a readable measure */
+#view-body .prose { max-width: none; }
+#view-body .prose p,
+#view-body .prose ul,
+#view-body .prose ol,
+#view-body .prose blockquote { max-width: 76ch; }
+
 /* ---- document and artifact views ---- */
-#view { flex: 1; overflow-y: auto; padding: 14px 22px 40px; }
 .view-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .view-head .back { font-size: 12px; text-decoration: none; }
 .view-head h1 {
@@ -510,7 +597,7 @@ a.p-hash:hover, a.p-hash:focus-visible { text-decoration: underline; }
     <span id="stop-chip" class="chip warn" hidden></span>
     <span id="read-only">Read-only. Changes happen in Claude Code.</span>
     <code id="repo-path" title=""></code>
-    <span id="freshness" title="Time of the last successful fetch"></span>
+    <span id="freshness" title="Last successful fetch"></span>
   </div>
 </header>
 
@@ -526,7 +613,6 @@ a.p-hash:hover, a.p-hash:focus-visible { text-decoration: underline; }
 <main>
   <div id="left">
     <div id="board" aria-label="funnel board"></div>
-    <div id="view" hidden></div>
   </div>
   <aside id="rail">
     <div class="rail-head">Sub-agents</div>
@@ -534,7 +620,19 @@ a.p-hash:hover, a.p-hash:focus-visible { text-decoration: underline; }
     <div class="rail-head">Pulse</div>
     <div id="pulse"></div>
   </aside>
+  <div id="view" hidden>
+    <button id="view-close" class="layer-close" aria-label="Close and show the board" title="close">&times;</button>
+    <div id="view-body"></div>
+  </div>
 </main>
+
+<div id="overlay" hidden>
+  <div id="overlay-scrim"></div>
+  <div id="overlay-sheet" role="dialog" aria-modal="true" aria-label="Idea document">
+    <button id="overlay-close" class="layer-close" aria-label="Close this idea" title="close">&times;</button>
+    <div id="overlay-body"></div>
+  </div>
+</div>
 
 <script id="viz-pure">
 // Pure helpers, no DOM access. Kept in their own block so the test suite can
@@ -591,7 +689,7 @@ a.p-hash:hover, a.p-hash:focus-visible { text-decoration: underline; }
 
   // The masthead's one-phrase answer to "is the refinery running".
   function refineryPhrase(tmux) {
-    if (!tmux || tmux.state === "unknown") return "state unknown — tmux not found";
+    if (!tmux || tmux.state === "unknown") return "tmux not found";
     if (tmux.state !== "running") return "down";
     return tmux.profile ? `running ${tmux.profile}` : "running";
   }
@@ -740,6 +838,8 @@ const state = {
   commitsPrimed: false,
   commitUrlTemplate: null,
   disconnected: false,
+  underlayHash: "#board",   // where closing the idea overlay returns to
+  renderedBase: null,       // routeKey of what #view-body currently holds
 };
 
 const $ = (id) => document.getElementById(id);
@@ -899,7 +999,7 @@ function pushPulse(entry) {
 
 function renderPulse() {
   if (!state.pulse.length) {
-    $("pulse").innerHTML = '<p class="p-none">nothing yet — commits and file events land here</p>';
+    $("pulse").innerHTML = '<p class="p-none">nothing yet. Commits and file events land here.</p>';
     return;
   }
   $("pulse").innerHTML = state.pulse.map(pulseRowHtml).join("");
@@ -949,14 +1049,22 @@ async function refreshCommits({ markNew }) {
 
 // ---- routing --------------------------------------------------------------
 
-function currentRoute() {
-  const h = decodeURIComponent(location.hash.replace(/^#/, ""));
+function parseRoute(hash) {
+  const h = decodeURIComponent(String(hash ?? "").replace(/^#/, ""));
   if (!h || h === "board") return { view: "board" };
   if (/^idea-\d{4}[a-z]?$/.test(h)) return { view: "idea", id: h };
   if (["ranked", "themes", "plans", "digests", "mail"].includes(h)) return { view: h };
   const m = h.match(/^(plans|digests)\/([^/]+)$/);
   if (m) return { view: m[1], file: m[2] };
   return { view: "board" };
+}
+
+function currentRoute() {
+  return parseRoute(location.hash);
+}
+
+function routeKey(route) {
+  return route.file ? `${route.view}/${route.file}` : route.view;
 }
 
 function setActiveTab(route) {
@@ -966,39 +1074,120 @@ function setActiveTab(route) {
   }
 }
 
-async function renderRoute() {
-  const route = currentRoute();
-  setActiveTab(route);
+// Wraps every idea-NNNN in a rendered view with a link that opens that
+// idea's card overlay. Walks text nodes only, and never inside an
+// existing link, so a cited URL that mentions an id keeps its own href.
+const IDEA_ID_ANY = /idea-\d{4}[a-z]?/;
+const IDEA_ID_ALL = /idea-\d{4}[a-z]?/g;
+function linkifyIdeaIds(rootEl) {
+  const walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT);
+  const hits = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!IDEA_ID_ANY.test(node.nodeValue)) continue;
+    if (node.parentElement && node.parentElement.closest("a")) continue;
+    hits.push(node);
+  }
+  for (const node of hits) {
+    const text = node.nodeValue;
+    const frag = document.createDocumentFragment();
+    let last = 0;
+    for (const m of text.matchAll(IDEA_ID_ALL)) {
+      frag.append(text.slice(last, m.index));
+      const a = document.createElement("a");
+      a.className = "idea-link";
+      a.href = `#${m[0]}`;
+      a.textContent = m[0];
+      frag.append(a);
+      last = m.index + m[0].length;
+    }
+    frag.append(text.slice(last));
+    node.parentNode.replaceChild(frag, node);
+  }
+}
+
+// The board or a full-screen artifact view: whatever the idea overlay
+// floats above. Skips the fetch when #view-body already holds the route,
+// so closing the overlay lands back on an unmoved report.
+async function renderBaseView(route, { force = false } = {}) {
   const showBoard = route.view === "board";
   $("board").hidden = !showBoard;
   $("view").hidden = showBoard;
   if (showBoard) {
+    state.renderedBase = "board";
     renderBoard();
     return;
   }
-  const view = $("view");
+  if (!force && state.renderedBase === routeKey(route)) return;
+  const body = $("view-body");
   try {
-    if (route.view === "idea") view.innerHTML = await ideaViewHtml(route.id);
-    else if (route.view === "ranked")
-      view.innerHTML = await artifactDocHtml("RANKED.md", "Ranked", "RANKED.md does not exist yet — the ranker has not run.");
+    if (route.view === "ranked")
+      body.innerHTML = await artifactDocHtml("RANKED.md", "Ranked", "RANKED.md does not exist yet. The ranker has not run.");
     else if (route.view === "themes")
-      view.innerHTML = await artifactDocHtml("THEMES.md", "Themes", "THEMES.md does not exist yet — the tagger has not run.");
+      body.innerHTML = await artifactDocHtml("THEMES.md", "Themes", "THEMES.md does not exist yet. The tagger has not run.");
     else if (route.view === "plans")
-      view.innerHTML = route.file
+      body.innerHTML = route.file
         ? await artifactDocHtml(`plans/${route.file}`, route.file, "That plan is gone.", "#plans")
         : await listingHtml("plans");
     else if (route.view === "digests")
-      view.innerHTML = route.file
+      body.innerHTML = route.file
         ? await artifactDocHtml(`digests/${route.file}`, route.file, "That digest is gone.", "#digests")
         : await listingHtml("digests");
-    else if (route.view === "mail") view.innerHTML = await mailViewHtml();
+    else if (route.view === "mail") body.innerHTML = await mailViewHtml();
+    linkifyIdeaIds(body);
   } catch (err) {
-    view.innerHTML = `<p class="notice">could not load this view — ${escapeHtml(err.message)}</p>`;
+    body.innerHTML = `<p class="notice">could not load this view: ${escapeHtml(err.message)}</p>`;
   }
-  view.scrollTop = 0;
+  state.renderedBase = routeKey(route);
+  body.scrollTop = 0;
 }
 
-// ---- idea document view ---------------------------------------------------
+async function openOverlay(id) {
+  const layer = $("overlay");
+  const wasHidden = layer.hidden;
+  $("overlay-body").innerHTML = await ideaSheetHtml(id);
+  layer.hidden = false;
+  if (wasHidden) {
+    $("overlay-body").scrollTop = 0;
+    $("overlay-close").focus();
+  }
+}
+
+// Closing the overlay means going back to wherever it was opened over.
+function returnToUnderlay() {
+  location.hash = state.underlayHash;
+}
+
+async function renderRoute() {
+  const route = currentRoute();
+  if (route.view === "idea") {
+    const base = parseRoute(state.underlayHash);
+    setActiveTab(base);
+    await renderBaseView(base);
+    await openOverlay(route.id);
+    return;
+  }
+  $("overlay").hidden = true;
+  state.underlayHash = location.hash || "#board";
+  setActiveTab(route);
+  await renderBaseView(route);
+}
+
+$("overlay-close").addEventListener("click", returnToUnderlay);
+$("overlay-scrim").addEventListener("click", returnToUnderlay);
+$("view-close").addEventListener("click", () => { location.hash = "#board"; });
+document.addEventListener("keydown", (ev) => {
+  if (ev.key !== "Escape") return;
+  if (!$("overlay").hidden) {
+    ev.preventDefault();
+    returnToUnderlay();
+  } else if (!$("view").hidden) {
+    ev.preventDefault();
+    location.hash = "#board";
+  }
+});
+
+// ---- idea document sheet --------------------------------------------------
 
 const COMMENT_TAGS = { challenger: "challenge", digest: "digest", overseer: "operator" };
 
@@ -1028,7 +1217,7 @@ function scorePanelHtml(fm) {
   </div>`;
 }
 
-async function ideaViewHtml(id) {
+async function ideaSheetHtml(id) {
   let doc;
   try {
     doc = await getJson(`/api/idea/${id}`);
@@ -1056,7 +1245,6 @@ async function ideaViewHtml(id) {
         .join("")}</details>`
     : "";
   return `<div class="view-head">
-      <a class="back" href="#board">&larr; board</a>
       <span class="doc-id">${escapeHtml(id)}</span>
       <h1>${escapeHtml(fm.title ?? "(untitled)")}</h1>
     </div>
@@ -1092,8 +1280,8 @@ async function listingHtml(kind) {
   const head = `<div class="view-head"><a class="back" href="#board">&larr; board</a><h1>${kind === "plans" ? "Plans" : "Digests"}</h1></div>`;
   if (!files.length) {
     const missing = kind === "plans"
-      ? "no plans yet — the planner and drafter write them."
-      : "no digests yet — /idea-digest writes the first one.";
+      ? "no plans yet. The planner and drafter write them."
+      : "no digests yet. /idea-digest writes the first one.";
     return `${head}<p class="notice">${missing}</p>`;
   }
   const cards = files
@@ -1124,7 +1312,7 @@ async function mailViewHtml() {
   const { mail } = await getJson("/api/mail");
   const recipients = Object.keys(mail).sort();
   const head = `<div class="view-head"><a class="back" href="#board">&larr; board</a><h1>Mail</h1></div>`;
-  if (!recipients.length) return `${head}<p class="notice">no mail yet — mail/ is empty.</p>`;
+  if (!recipients.length) return `${head}<p class="notice">no mail yet.</p>`;
   const sections = recipients.map((recipient) => {
     const senders = Object.keys(mail[recipient]).sort();
     const pairs = senders.map((sender) => {
@@ -1144,7 +1332,8 @@ async function mailViewHtml() {
 async function refreshState() {
   state.snapshot = await getJson("/api/state");
   renderMasthead();
-  if (currentRoute().view === "board") renderBoard();
+  // the board also re-renders while the idea overlay floats above it
+  if (!$("board").hidden) renderBoard();
   renderAgents();
 }
 
@@ -1170,7 +1359,9 @@ async function fullRefresh() {
     renderMasthead();
     stampFreshness();
     const route = currentRoute();
-    if (route.view !== "board") await renderRoute();
+    if (route.view === "idea") await openOverlay(route.id);
+    const base = route.view === "idea" ? parseRoute(state.underlayHash) : route;
+    if (base.view !== "board") await renderBaseView(base, { force: true });
   } catch {
     state.disconnected = true;
     renderMasthead();
@@ -1195,13 +1386,16 @@ function onSseEvent(ev) {
   }
   if (ev.area === "ideas") work.push(refreshCommits({ markNew: true }));
 
-  // Re-render the open view when the event touches what it shows.
+  // Re-render whatever is open when the event touches what it shows:
+  // the idea overlay, and the base view underneath or on its own.
   const route = currentRoute();
-  const viewCares =
-    (route.view === "idea" && ev.area === "ideas") ||
-    (route.view === "mail" && ev.area === "mail") ||
-    (["ranked", "themes", "plans", "digests"].includes(route.view) && ev.area === "artifact");
-  if (viewCares) work.push(renderRoute());
+  const overlayOpen = route.view === "idea";
+  if (overlayOpen && ev.area === "ideas") work.push(openOverlay(route.id));
+  const base = overlayOpen ? parseRoute(state.underlayHash) : route;
+  const baseCares =
+    (base.view === "mail" && ev.area === "mail") ||
+    (["ranked", "themes", "plans", "digests"].includes(base.view) && ev.area === "artifact");
+  if (baseCares) work.push(renderBaseView(base, { force: true }));
 
   Promise.allSettled(work).then(stampFreshness);
 }

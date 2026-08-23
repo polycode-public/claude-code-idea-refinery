@@ -21,7 +21,7 @@ smaller but truer, that is a good rewrite.
 
 Comments are append-only. Never edit or delete an entry, including your own; the thread
 is the refinery's record of the argument. Your rewrite touches the Idea and Model
-sections only. Take ownership before editing: move the document into your bucket first,
+sections only. Take ownership before editing. Move the document into your bucket first,
 so the bucket directory stays the write lock.
 
 ## The digest duty

@@ -1,5 +1,5 @@
 // Rebuilds RANKED.md deterministically from idea front matter. The table is
-// mechanical; judgment about graduation stays with the ranker agent. A bucket not
+// mechanical. Judgment about graduation stays with the ranker agent. A bucket not
 // listed here (killed, archive, operator-rejected, 0-seeds) never reaches the table.
 import fs from "node:fs";
 import path from "node:path";

@@ -46,9 +46,9 @@ test("a missing key without --stub exits non-zero without touching the network",
   const cwd = tmpCwd();
   const env = { ...process.env };
   delete env.VOYAGE_API_KEY;
-  // Point at an unroutable address: if the code reached fetch() before the
+  // Point at an unroutable address. If the code reached fetch() before the
   // key check, this run would hang until the timeout below instead of
-  // exiting immediately, which is how the assertion proves no request was
+  // exiting immediately. That is how the assertion proves no request was
   // ever attempted.
   env.VOYAGE_API_URL = "http://10.255.255.1/v1/embeddings";
 
@@ -79,7 +79,7 @@ test("the key never appears on stdout or stderr, even when the request fails", a
       VOYAGE_API_URL: `http://127.0.0.1:${port}/v1/embeddings`,
     };
     // spawnSync would block this process's event loop, and the server
-    // above lives in this same process — it could never accept the
+    // above lives in this same process. It could never accept the
     // child's connection. Use async spawn instead so the server can
     // answer while we wait for the child to exit.
     const result = await new Promise((resolve, reject) => {

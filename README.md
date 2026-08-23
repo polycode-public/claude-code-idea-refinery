@@ -6,18 +6,18 @@ by Anthropic.
 The Idea Refinery is a set of Claude Code sub-agents running as background loops. Each
 loop wakes on an interval, does one narrow job on the funnel (seed, score, challenge,
 refine, plan, rank), commits its work, and sleeps. The sub-agents coordinate through
-file-based mail, every idea is a markdown document in this repository, git is the audit
-log, and a human overseer session steers and has the final word.
+file-based mail. Every idea is a markdown document in this repository, and git is the
+audit log. A human overseer session steers and has the final word.
 
 ## Operator skills
 
-The levers, all pulled from an interactive Claude Code session except the last, which
-is the script the cycle skill wraps.
+You pull every lever below from an interactive Claude Code session, except the last,
+which is the script the cycle skill wraps.
 
 - **`/refinery-run [up|status|down] [cruise]`** starts, inspects, or stops the
   continuous refinery. `up` opens one tmux window per loop agent and reports each
-  agent's first status; `status` prints one line per agent with window state, last
-  wake, today's wakes and spend, and error-log size; `down` writes `STOP`, waits for
+  agent's first status. `status` prints one line per agent with window state, last
+  wake, today's wakes and spend, and error-log size. `down` writes `STOP`, waits for
   every loop to exit on its own, then removes the session. Reach for it when you want
   the refinery working unattended, want to know what it is doing, or want it stopped
   safely.
@@ -27,17 +27,17 @@ is the script the cycle skill wraps.
   out the loop intervals. It refuses to run while the continuous refinery is up.
 - **`/idea-inject <prose or idea-NNNN>`** puts one idea through the whole funnel. Give
   it a prose brief and it seeds the idea via an overseer directive to the harvester,
-  charter gates applied; give it an existing idea's id and it carries that idea
+  charter gates applied. Give it an existing idea's id and it carries that idea
   forward from wherever it stands. It cycles until the idea graduates, is killed, or
   stalls, then reports the journey: every comment, each score change, and the final
   bucket.
-- **`/idea-digest`** reads every idea document and writes `digests/DIGEST_<date>.md`:
-  each idea's stage and score, its consumer offering in plain customer language, and
-  the shortest honest statement of what realising it still needs. Reach for it when
-  you want to scan the whole corpus without opening every file.
-- **`/refinery-viz`** starts the read-only viewer and hands back its URL — the funnel
-  board, agent rail and pulse, live off the filesystem. The "Watching the refinery"
-  section below shows it.
+- **`/idea-digest`** reads every idea document and writes `digests/DIGEST_<date>.md`.
+  Each entry gives the idea's stage and score, its consumer offering in plain customer
+  language, and the shortest honest statement of what realising it still needs. Reach
+  for it when you want to scan the whole corpus without opening every file.
+- **`/refinery-viz`** starts the read-only viewer and hands back its URL. The page
+  shows the funnel board, the agent rail and the pulse, live off the filesystem. The
+  "Watching the refinery" section below has the screenshots.
 - **`npm run -s cycle -- [-n max_cycles] [agent ...]`** is the direct form of the
   funnel pass, no session needed. It wakes each agent once per cycle in funnel order
   and prints a progress line per cycle, stopping early once a cycle changes nothing.
@@ -76,7 +76,7 @@ and where it ended up.
 - git.
 - A Voyage AI key. Copy `.env.example` to `.env` and fill in `VOYAGE_API_KEY`.
   `src/embed.mjs` uses it to embed idea pitches for the tagger's themes and for
-  the retrieval index. The key never leaves the machine — it's read from `.env` or the
+  the retrieval index. The key never leaves the machine. It's read from `.env` or the
   environment and never appears in output, including error messages.
 
 ## Setup
@@ -86,7 +86,7 @@ npm install
 npm run -s check
 ```
 
-`check.sh` is the whole gate: it syntax-checks every script, parses `caps.json`, lints
+`check.sh` is the whole gate. It syntax-checks every script, parses `caps.json`, lints
 the idea buckets, and runs the test suite. It must pass clean before anything else.
 
 Then run one probe wake to prove the plumbing works end to end without touching
@@ -97,7 +97,7 @@ npm run -s loop -- probe 5
 touch STOP.probe
 ```
 
-This starts the probe's loop with a 5-second interval; `touch STOP.probe` stops it at
+This starts the probe's loop with a 5-second interval. `touch STOP.probe` stops it at
 the start of its next wake. A clean probe run proves `claude -p` invokes correctly
 under the pinned CLI version, budget accounting writes to `logs/probe.jsonl`, and a
 wake's changes commit on schedule.
@@ -114,11 +114,11 @@ npm run -s refinery -- down
 
 `up` opens one tmux window per loop agent (every agent with a
 `prompts/<agent>.md`, excluding the probe, unless you name agents on the
-command line) and refuses to start if `STOP` is present or a session is already up.
+command line). It refuses to start if `STOP` is present or a session is already up.
 `sprint` is the default profile: shorter wake intervals, for active grooming.
-`cruise` spaces wakes out for a refinery left running unattended — set it with
-`--profile cruise`. `down` waits for every loop window to exit — including the
-slowest sleeper mid-interval — before killing the tmux session and removing `STOP`.
+`cruise` spaces wakes out for a refinery left running unattended. Set it with
+`--profile cruise`. `down` waits for every loop window to exit, including the
+slowest sleeper mid-interval, before killing the tmux session and removing `STOP`.
 
 **One serial pass**, for a single hands-on grooming run with no waiting between
 wakes:
@@ -128,7 +128,7 @@ npm run -s cycle -- [-n max_cycles] [agent ...]
 ```
 
 With no arguments, `cycle.sh` runs all twelve loop agents once each, in funnel order.
-Name agents to run only those. It refuses to run while the tmux session is up — stop
+Name agents to run only those. It refuses to run while the tmux session is up, so stop
 the loops first.
 
 **A single agent loop**, for watching one role work:
@@ -143,14 +143,14 @@ Stop a single loop with `touch STOP.<agent>`; stop everything with `touch STOP`
 ## Working with ideas
 
 An idea moves through the top-level numbered `ideas-*` buckets as it's seeded, scored,
-challenged, refined and ranked, with `ideas-killed/` and `ideas-archive/` for ideas that don't
-survive or that split and merged away — see the `idea-doc` skill for the full
-lifecycle and who may write where. `ideas-operator-selected/` holds ideas the
-operator has pinned for priority grooming: they're worked in place by all the
-sub-agents, and only the overseer moves a file in or out. `ideas-operator-rejected/`
-holds the operator's vetoes, and `ideas-operator-rejected/REASONS.md` distils them
-into standing rejection patterns that the harvester, wanderer, scorer and challenger
-consult before seeding or scoring something that already failed once.
+challenged, refined and ranked. `ideas-killed/` and `ideas-archive/` hold the ideas that
+don't survive and the ones that split and merged away. See the `idea-doc` skill for the
+full lifecycle and who may write where. `ideas-operator-selected/` holds ideas the
+operator has pinned for priority grooming. All the sub-agents work them in place, and
+only the overseer moves a file in or out. `ideas-operator-rejected/` holds the
+operator's vetoes, and `ideas-operator-rejected/REASONS.md` distils them into standing
+rejection patterns. The harvester, wanderer, scorer and challenger read those patterns
+before seeding or scoring something that already failed once.
 
 ## Reading the refinery
 
@@ -169,21 +169,21 @@ consult before seeding or scoring something that already failed once.
 /refinery-viz
 ```
 
-Starts a small local server and hands back `http://127.0.0.1:4642`: the funnel board,
-the sub-agent rail, and the pulse of wake commits and file events, all live off the
-filesystem — the same picture `RANKED.md` and `git log` give in text, updating as it
-happens. Click any idea for its full document and comment thread. It never writes
-anything; changes still happen here, in Claude Code.
+Starts a small local server and hands back `http://127.0.0.1:4642`. The page shows the
+funnel board, the sub-agent rail, and the pulse of wake commits and file events, all
+live off the filesystem. It is the same picture `RANKED.md` and `git log` give in text,
+updating as it happens. Click any idea for its full document and comment thread. The
+viewer never writes anything; changes still happen here, in Claude Code.
 
 ![The refinery viewer's funnel board: a column per bucket from seeds through ranked, then the operator's selected and rejected columns, with the sub-agent rail and the pulse of wake commits down the right-hand side.](assets/viz/board-light.png)
 
-Click any card and the board gives way to the document itself — front-matter chips,
+Click any card and the board gives way to the document itself: front-matter chips,
 the rubric breakdown axis by axis, the prose, and the comment thread underneath.
 
 ![An idea document open in the viewer: title, bucket and tag chips, a 69-of-100 score panel broken down across the seven rubric axes, and the cited prose below.](assets/viz/idea-view.png)
 
 Both shots come from `npm run -s viz:shots`, which drives the real page through
-Playwright and overwrites `assets/viz/` in place; `npm run -s test:ui` runs the
+Playwright and overwrites `assets/viz/` in place. `npm run -s test:ui` runs the
 browser smoke tests behind them. `assets/viz/social-preview.png` is the 1280x640
 card for the repository's Settings → Social preview upload, and `board-dark.png`
 is the same board in the dark theme.
@@ -199,12 +199,12 @@ npm run -s mail -- send <agent> --from overseer [--re <id>]
 Body on stdin. See the `mail` skill for the block format and the hop-limit rule.
 
 STOP files halt loops at the start of their next wake: `STOP` for all the loops,
-`STOP.<agent>` for one. Never remove `STOP` while the tmux session is still alive —
-wait for `refinery.sh down` to finish removing it itself.
+`STOP.<agent>` for one. Never remove `STOP` while the tmux session is still alive.
+Wait for `refinery.sh down` to remove it itself.
 
 Budgets live in `caps.json`: per-agent `dailyUsd`, `wakeUsd`, `dailyWakes`, and
-`sprintSeconds`/`cruiseSeconds` wake intervals. These are tuned from measurement —
-retune them from `report.mjs` numbers, not from argument.
+`sprintSeconds`/`cruiseSeconds` wake intervals. These are tuned from measurement.
+Retune them from `report.mjs` numbers, not from argument.
 
 ## The sub-agents
 
@@ -235,10 +235,10 @@ Runs, in order: `bash -n` over every `scripts/*.sh`, `node --check` over every
 `npm test`.
 
 The viewer's browser tests sit outside that gate, in `e2e/`, so `check` needs no
-browser: `npm run -s test:ui` runs them (`npx playwright install chromium` once,
+browser. `npm run -s test:ui` runs them (`npx playwright install chromium` once,
 first time), and `npm run -s viz:shots` recaptures `assets/viz/`.
 
 `npm run -s lint-buckets` enforces one rule: one idea id lives in exactly one
 bucket, and that bucket implies the idea's `status`. A violation prints and the
-script exits non-zero — a duplicate id across buckets has corrupted the ranking
+script exits non-zero. A duplicate id across buckets has corrupted the ranking
 before, so this check is part of the gate, not a lint you can skip.

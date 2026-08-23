@@ -7,9 +7,9 @@
 // bucket counts and survival rates, kill reasons by rubric axis, funnel
 // warnings, and mail volume plus hop escalations.
 //
-// Deterministic given the same files: every table is sorted, and the only
+// Deterministic given the same files. Every table is sorted, and the only
 // wall-clock read is the header's date line and the "today" cutoff for the
-// per-agent wake/cost columns — both driven by one `--date YYYY-MM-DD`
+// per-agent wake/cost columns. Both are driven by one `--date YYYY-MM-DD`
 // override so tests can pin them.
 //
 // Usage: report.mjs [--date YYYY-MM-DD]
@@ -37,14 +37,14 @@ const BUCKETS = [
 
 // Rubric axis keys, in the rubric skill's table order. Real scorer comments
 // name the weak axis inline as "Pain (2)", "WTP (2)", "Build (1)" and so
-// on — the same short keys the score-breakdown header uses.
+// on. These are the same short keys the score-breakdown header uses.
 const AXES = ["pain", "wtp", "inbound", "build", "cogs", "density", "risk"];
 
 const STAGE_INDEX = { seeded: 0, scored: 1, contested: 2, refined: 3, ranked: 4 };
 const STAGE_ORDER = ["scored", "contested", "refined", "ranked"];
 
 // A bucket implies at least this stage was reached, even with no comments
-// at all: killed only fires after the scorer evaluates an idea, and an
+// at all. Killed only fires after the scorer evaluates an idea, and an
 // archived doc was at least seeded before it was split or merged away.
 const BUCKET_BASE_STAGE = {
   "0-seeds": "seeded",
@@ -57,7 +57,7 @@ const BUCKET_BASE_STAGE = {
 };
 
 // A comment left by one of these roles is evidence the idea reached that
-// stage at some point, regardless of where it sits now — this is what lets
+// stage at some point, regardless of where it sits now. This is what lets
 // an archived split parent or a killed idea count as having reached
 // "contested" if a challenger actually engaged with it.
 const ROLE_STAGE = { scorer: "scored", challenger: "contested", refiner: "refined" };
@@ -141,7 +141,7 @@ function loadAgentStats(today) {
 
 // ---- git log (read-only) ----------------------------------------------
 
-// logs/ is gitignored operational state, so it can be rotated or lost;
+// logs/ is gitignored operational state, so it can be rotated or lost.
 // git history is permanent. Counting commits by the refinery's own
 // convention ("<agent>: message") gives a durable cross-check on wakes
 // alongside the ephemeral log-derived counts above.
@@ -246,10 +246,10 @@ function lastBlockByRole(blocks, role) {
   return null;
 }
 
-// Best-effort: look for "<axis> (<digit>)" in the final scorer comment —
-// the shape real scorer prose uses ("Pain (2):", "WTP (1):"). A digit of 2
-// or below marks that axis as a reason for the kill. Falls back to the
-// header's score-breakdown when the comment's prose doesn't parse.
+// Looks for "<axis> (<digit>)" in the final scorer comment, the shape real
+// scorer prose uses ("Pain (2):", "WTP (1):"). A digit of 2 or below marks
+// that axis as a reason for the kill. Falls back to the header's
+// score-breakdown when the comment's prose doesn't parse.
 function failingAxesFromText(text) {
   const failing = [];
   for (const axis of AXES) {

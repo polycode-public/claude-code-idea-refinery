@@ -3,7 +3,7 @@
 // Refinery front matter is plain "key: value" lines between --- fences, plus
 // the one list shape "tags: [a, b]". Values are raw strings, never coerced,
 // so a title or url passes through byte-for-byte. A YAML parser would quote,
-// coerce and re-type these values; this stays a line grammar on purpose.
+// coerce and re-type these values. This stays a line grammar on purpose.
 
 // Returns { fm, body } for a doc that opens with a --- fence, else null.
 export function parseFrontMatter(raw) {

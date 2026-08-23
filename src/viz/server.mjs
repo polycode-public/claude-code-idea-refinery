@@ -120,14 +120,14 @@ function listStopFiles(root) {
     .filter((name) => name === "STOP" || name.startsWith("STOP."));
 }
 
-// Read-only shell-outs only: has-session, then list-windows. tmux's absence
-// is not an error, it is a fact about the machine.
+// Read-only shell-outs only: has-session, then list-windows. A missing
+// tmux binary reports state as unknown rather than failing the request.
 function tmuxState() {
   try {
     execFileSync("tmux", ["has-session", "-t", "refinery"], { stdio: "pipe" });
   } catch (error) {
     if (error.code === "ENOENT") {
-      return { state: "unknown", detail: "unknown — tmux not found" };
+      return { state: "unknown", detail: "tmux not found" };
     }
     return { state: "down", detail: "refinery session not running", windows: [] };
   }
@@ -162,7 +162,7 @@ function tmuxProfile() {
 }
 
 // The model tier a loop wake runs on, from the agent definition's front
-// matter — the same file `claude -p --agent` reads.
+// matter. `claude -p --agent` reads the same file.
 function agentTier(root, agent) {
   const file = path.join(root, ".claude", "agents", `${agent}.md`);
   if (!fs.existsSync(file)) return null;
@@ -208,7 +208,7 @@ function latestLogEntry(root, agent) {
 // A generic "key: value" reader for a front-matter block, plus the two
 // fields that need their own shape: tags (a bracketed list) and
 // score-breakdown (a brace object). Sources is the one indented-list field
-// besides tags; it is read the same way tags would be if it used brackets.
+// besides tags. It is read the same way tags would be if it used brackets.
 function parseFmObject(fm) {
   const lines = fm.split("\n");
   const obj = {};
@@ -312,8 +312,8 @@ function mailCursor(dir, sender) {
 // ---- artifact path resolution ---------------------------------------------
 
 // Resolves a requested artifact name to an absolute path inside exactly
-// RANKED.md, THEMES.md, plans/ or digests/ — or null when it points
-// anywhere else, including via ../ traversal.
+// RANKED.md, THEMES.md, plans/ or digests/. Null when it points anywhere
+// else, including via ../ traversal.
 function resolveArtifactPath(root, name) {
   if (name === null || name.includes("\0")) return null;
   if (ARTIFACT_SINGLETONS.has(name)) return path.join(root, name);
@@ -349,7 +349,7 @@ function readCommits(root) {
 
 // Derives a {hash} commit-URL template from `git remote get-url origin`, for
 // GitLab and GitHub, ssh or https form. Null when there is no origin or the
-// host is neither — the client then renders the hash unlinked.
+// host is neither. The client then renders the hash unlinked.
 function readCommitUrlTemplate(root) {
   let url = "";
   try {
@@ -410,7 +410,7 @@ function watchDirTargets(root) {
 // One watcher per existing target directory, plus one non-recursive watch
 // on root for the loose top-level files (RANKED.md, THEMES.md, caps.json,
 // STOP*). A directory created after the server starts is picked up only on
-// restart — the client's periodic full refresh (V1) covers that gap.
+// restart. The client's periodic full refresh covers that gap.
 function setupWatchers(root, onChange) {
   const watchers = [];
 
@@ -568,8 +568,8 @@ function handleCommits(root, res) {
 
 // The listings behind the plans and digests tabs: file names only, plus a
 // plan's own "Status:" line so it can surface on the card. RANKED.md and
-// THEMES.md report bare existence — a missing one is an honest gap the
-// page words itself.
+// THEMES.md report bare existence. A missing one is an honest gap that the
+// page states directly.
 function listArtifactDir(root, dirName, withStatus) {
   const dir = path.join(root, dirName);
   if (!fs.existsSync(dir)) return [];
@@ -595,8 +595,8 @@ function handleArtifacts(root, res) {
   });
 }
 
-// The page's one library, served from this repository's own node_modules —
-// the browser never fetches beyond localhost.
+// The page's one library, served from this repository's own node_modules.
+// The browser never fetches beyond localhost.
 function markedFile() {
   try {
     const require = createRequire(import.meta.url);
@@ -610,7 +610,7 @@ function markedFile() {
 function handleMarked(res) {
   const file = markedFile();
   if (!file || !fs.existsSync(file)) {
-    return sendText(res, 500, "marked is not installed — run npm install\n");
+    return sendText(res, 500, "marked is not installed. Run npm install.\n");
   }
   sendText(res, 200, fs.readFileSync(file, "utf8"), "text/javascript; charset=utf-8");
 }

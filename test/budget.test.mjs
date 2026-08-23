@@ -55,7 +55,7 @@ test("check sums only today's UTC lines, ignoring entries from other days", () =
   writeLogLine(cwd, "scorer", { total_cost_usd: 4.9, loggedAt: "2000-01-01T01:00:00Z" });
 
   const result = run(cwd, ["check", "scorer"]);
-  // 4.9 today is under the 5.00 daily cap; the 2000-01-01 line must not count.
+  // 4.9 today is under the 5.00 daily cap. The 2000-01-01 line must not count.
   assert.equal(result.status, 0);
 });
 

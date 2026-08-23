@@ -60,7 +60,7 @@ test("the page references no cross-origin URL", () => {
   let checked = 0;
   for (const attr of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
     const url = attr[1];
-    // Template placeholders are runtime values; the markdown tests prove
+    // Template placeholders are runtime values. The markdown tests prove
     // what those may hold. This test is about the page's static references.
     if (url.includes("${")) continue;
     checked += 1;
@@ -139,7 +139,7 @@ test("viz-pure: refineryPhrase names sprint, cruise, down and missing tmux", () 
   assert.equal(VizPure.refineryPhrase({ state: "running", profile: "cruise" }), "running cruise");
   assert.equal(VizPure.refineryPhrase({ state: "running", profile: null }), "running");
   assert.equal(VizPure.refineryPhrase({ state: "down" }), "down");
-  assert.equal(VizPure.refineryPhrase({ state: "unknown" }), "state unknown — tmux not found");
+  assert.equal(VizPure.refineryPhrase({ state: "unknown" }), "tmux not found");
 });
 
 test("viz-pure: agentFromLogPath accepts log files only", () => {

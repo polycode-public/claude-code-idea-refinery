@@ -67,8 +67,8 @@ function tmpCwdWithIdea(body = "A test idea about kumquat orchards, used to exer
 }
 
 // No docs/ directory at all, so a run without --no-annotate still never
-// shells out to claude: there is nothing of source docs to annotate, and
-// ideas never are.
+// shells out to claude. There is nothing of source docs to annotate, and
+// ideas are never annotated regardless.
 function tmpCwdIdeaOnly(body = "A test idea about kumquat orchards, used to exercise the ideas source path.") {
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "indexer-test-"));
   writeIdea(cwd, "0-seeds", body);

@@ -6,7 +6,7 @@ the steps in order and exit.
    comment on that idea. Keep the text of any mail from the challenger; you need it in
    step 4.
 
-2. If `THEMES.md` doesn't exist, exit now — there is nothing to propose or execute.
+2. If `THEMES.md` doesn't exist, exit now. There is nothing to propose or execute.
 
 3. **Propose.** For each `Convergence candidates:` line in `THEMES.md` whose numbers
    meet both thresholds (tag Jaccard at least 0.6, cosine at least 0.85):
@@ -14,16 +14,16 @@ the steps in order and exit.
    - Read both ideas' Comments sections. If either already carries a
      `### merger —` entry naming this pair with `merge: proposed` and neither idea
      carries a later `### merger —` entry for the same pair reading `merge: executed`
-     or `merge: cancelled`, the proposal is already open — skip this pair.
-   - Otherwise, work out the survivor: the idea with the higher header `score`; a tie
-     goes to the numerically older id (the lower id number).
+     or `merge: cancelled`, the proposal is already open. Skip this pair.
+   - Otherwise, work out the survivor. It is the idea with the higher header `score`;
+     a tie goes to the numerically older id (the lower id number).
    - Mail the challenger: `npm run -s mail -- send challenger --from merger --re
      <survivor-id>`, body on stdin naming both ids, the tag Jaccard and cosine numbers,
      and which idea is the proposed survivor and why.
    - Append a comment to the survivor idea recording the proposal, e.g.
      `### merger — <UTC timestamp>` then a line naming both ids, the numbers, and the
      survivor, ending with `merge: proposed`. This comment is the only durable record
-     of the proposal — a later wake reads it, not the mail, to know the pair is
+     of the proposal. A later wake reads it, not the mail, to know the pair is
      pending.
 
 4. **Resolve open proposals.** Find every idea whose Comments carry a
@@ -31,7 +31,7 @@ the steps in order and exit.
    for the same pair reading `merge: executed` or `merge: cancelled`. For each:
 
    - **Veto.** If the mail you read in step 1 (or any mail from the challenger you have
-     not yet acted on) includes a block about this pair, that is a veto — whatever it
+     not yet acted on) includes a block about this pair, that is a veto, whatever it
      says. Append a comment to the survivor: `### merger — <UTC timestamp>`, the veto
      reason from the challenger's mail, ending `merge: cancelled`. Do nothing else for
      this pair: no merge, no further mail.
@@ -40,7 +40,7 @@ the steps in order and exit.
      the challenger to anyone (`mail/*/challenger.md`) timestamped after the proposal,
      or any commit whose message starts `challenger:` dated after the proposal
      (`git log --oneline --since=<proposal timestamp>` and look for one). Find neither,
-     and the pair stays pending — leave it, no write, no comment, move to the next
+     and the pair stays pending. Leave it. No write, no comment; move to the next
      pair.
    - **Execute.** With the window passed and no veto, merge per the idea-doc skill:
      append to the survivor's Comments section a single header,
