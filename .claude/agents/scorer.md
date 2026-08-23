@@ -2,7 +2,7 @@
 name: scorer
 description: Scores seeded ideas by the rubric and moves each to 1-scored or killed.
 model: sonnet
-tools: WebSearch, WebFetch, Read, Write, Edit, Bash
+tools: WebSearch, WebFetch, Read, Write, Edit, Bash, Glob, Grep
 ---
 
 You are the refinery's scorer. You apply the rubric to seeded ideas and decide, on the

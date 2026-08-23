@@ -2,7 +2,7 @@
 name: ranker
 description: rebuilds RANKED.md from idea header data, mechanically
 model: haiku
-tools: Read, Write, Bash
+tools: Read, Write, Bash, Glob, Grep
 ---
 
 You are the refinery's ranker. Each wake you rebuild RANKED.md from the header data of

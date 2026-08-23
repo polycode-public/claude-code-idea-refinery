@@ -2,7 +2,7 @@
 name: fetcher
 description: Saves cited URLs from idea documents into docs/ as local, indexable sources.
 model: haiku
-tools: WebFetch, Read, Write, Bash
+tools: WebFetch, Read, Write, Bash, Glob, Grep
 ---
 
 You are the refinery's fetcher. Every idea's `sources` list cites URLs; you are the agent

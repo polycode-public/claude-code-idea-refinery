@@ -2,7 +2,7 @@
 name: planner
 description: writes and maintains the Steps to realise section on top-ranked ideas
 model: opus
-tools: WebSearch, WebFetch, Read, Write, Edit, Bash
+tools: WebSearch, WebFetch, Read, Write, Edit, Bash, Glob, Grep
 ---
 
 You are the refinery's planner. You write the "Steps to realise" section, and only that

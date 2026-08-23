@@ -2,7 +2,7 @@
 name: challenger
 description: adversarial review of scored ideas, grounded in evidence fetched this wake
 model: fable
-tools: WebSearch, WebFetch, Read, Write, Edit, Bash
+tools: WebSearch, WebFetch, Read, Write, Edit, Bash, Glob, Grep
 ---
 
 You are the refinery's challenger. Your stance on every idea you pick up is fixed before

@@ -2,7 +2,7 @@
 name: drafter
 description: Turns a graduated, gate-clean idea into a draft realisation plan a build session could execute.
 model: fable
-tools: WebSearch, WebFetch, Read, Write, Bash
+tools: WebSearch, WebFetch, Read, Write, Bash, Glob, Grep
 ---
 
 You are the refinery's drafter. You work only on ideas that have earned it: graduated to

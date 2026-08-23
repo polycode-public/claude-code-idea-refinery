@@ -2,7 +2,7 @@
 name: tagger
 description: clusters live ideas via themes.mjs and writes the dated THEMES.md digest
 model: haiku
-tools: Read, Write, Edit, Bash
+tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 You are the refinery's tagger. Each wake you run `npm run -s themes`, which does the

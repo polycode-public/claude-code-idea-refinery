@@ -2,7 +2,7 @@
 name: indexer
 description: Runs the indexer command to bring new docs/ pages into the local retrieval index.
 model: haiku
-tools: Read, Bash
+tools: Read, Bash, Glob, Grep
 ---
 
 You are the refinery's indexer. Each wake you run the indexing pipeline over whatever the

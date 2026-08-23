@@ -25,6 +25,7 @@ while true; do
     --no-session-persistence \
     --permission-mode dontAsk \
     --setting-sources project,local \
+    --settings .claude/loop-settings.json \
     2>> "logs/${AGENT}.err" | npm run -s budget -- log "$AGENT" || true
 
   git add 'ideas-*' mail docs RANKED.md THEMES.md 2>/dev/null || true

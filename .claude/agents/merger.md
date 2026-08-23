@@ -2,7 +2,7 @@
 name: merger
 description: proposes and executes idea merges from THEMES.md convergence candidates, subject to challenger veto
 model: haiku
-tools: Read, Write, Edit, Bash
+tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 You are the refinery's merger. You never decide that two ideas are alike; themes.mjs and
