@@ -512,4 +512,97 @@ commit: fetcher: save 0001-online-safety-act-repeal-bennett,
 Three sources saved to `docs/` while the idea is still live. The second bug, avoided in
 practice by sequencing rather than by a code change.
 
+### A third bug: the indexer cannot run its own command
+
+`prompts/indexer.md` tells the indexer to run:
+
+```
+npm run -s indexer -- --new-only > /tmp/indexer-wake.log 2>&1
+echo "exit: $?"
+tail -20 /tmp/indexer-wake.log
+```
+
+The prompt explains the redirect. It avoids `| tail` so a pipe cannot mask the
+pipeline's real exit code. Sound reasoning, and the redirect stops the command matching
+`Bash(npm run:*)` in the repo's own allowlist. The template's prompt issues a command
+the template's settings deny.
+
+Allowing the exact literal did not clear it either, so the block comes from the shape of
+the command rather than the program name. Run by hand the pipeline works first time:
+3 docs and 2 ideas scanned, 25 chunks indexed. On an unattended generation `index/`
+would stay empty forever, with no error anywhere except a wake result nothing reads.
+
+---
+
+## The scorer kept idea-0002
+
+Score **68/100**, breakdown
+`{pain: 4, wtp: 2, inbound: 4, build: 4, cogs: 4, density: 4, risk: 2}`.
+
+Both gates clear. The adaptation moved exactly the axes the directive aimed at: inbound
+3 to 4, density 2 to 4, pain 3 to 4.
+
+The scorer searched rather than trusting the seed. It confirmed the scope claim from two
+sources the harvester never cited, and ran two competitor searches of its own. Four
+independent searches now find no turnkey competitor, and it still refused to call the
+space cleared while gap 6 stays open.
+
+Two axes stayed at 2, and it said why in plain terms:
+
+- **Willingness-to-pay.** Discourse's $100–500/month anchors what forums pay for hosting
+  software, not for compliance. No forum is shown paying a third party for compliance
+  relief. "The ask is inferred from pricing precedent, not observed."
+- **Risk.** Gap 1 again. The scorer searched Ofcom and legislation.gov.uk itself and
+  found "nothing confirming the Facebook-Groups analogy the whole value proposition
+  rests on."
+
+68 clears the kill floor and falls short of graduation, which needs 65 plus a resolved
+challenge plus real steps.
+
+---
+
+## The challenger
+
+This is the wake that shows what the funnel is for. It fetched the statute, the repeal
+petition's government response, an implementation guide, a Forumotion staff thread and a
+summary of Ofcom's age-assurance guidance.
+
+**It conceded gap 1, the load-bearing question, on the statute's own words.** OSA
+s.226(2) says the provider of a user-to-user service "is to be treated as being the
+entity that has control over who can use the user-to-user part of the service (and that
+entity alone)". A platform operator controlling all accounts is the sole provider by
+statutory default, and community admins are users. Its verdict: "The Facebook-Groups
+analogy stands better than the doc's own hedging implies."
+
+Then it turned that concession into the sharpest hole in the document.
+
+**Hole 1, liability priced at zero.** The clause that creates the value proposition,
+"that entity alone", concentrates the whole segment's regulatory exposure on one founder
+personally. The ceiling is £18m or 10% of global revenue. Velocio shut LFGSS because
+that personal risk was too high, which is the document's own source. The fee is strict
+cost recovery with no margin, so it prices the founder's compliance time at £3k a year
+and prices the risk transfer, the actual product, at zero. No legal reserve, no
+insurance line. One CSAM incident or one Ofcom information notice eats the year's whole
+compliance budget in solicitor hours. Either the fee grows a serious legal line, which
+breaks the Discourse comparison, or the founder does for free what Velocio refused to do
+at all.
+
+**Hole 2, free structural substitutes.** It conceded the shelf is empty of vendors
+marketing OSA carriage. But ProBoards and Forumotion are multi-tenant platforms whose
+operators already control accounts, the same s.226(2) position, at price zero. An admin
+can shed provider status today without paying anyone. It fetched a Forumotion staff
+reply on age verification: "no plans as far as i know". So the sellable difference
+narrows to compliance done seriously plus the ad-free posture, against free, ad-funded
+and complacent.
+
+**Hole 3, demand decaying by official design.** The government's petition response says
+Ofcom will "take a sensible approach to enforcement with smaller services that present
+low risk to UK users". Eighteen months in, the document cites zero small-forum
+enforcement actions, and its own source records LFGSS reopening. Fear the regulator is
+actively deflating is a decaying asset.
+
+**It corrected the scorer.** The scorer's spot-checked claim that small forums sit in
+Category 2B is wrong; Category 2B's floor is 3 million monthly UK users. One agent
+catching another's cited error is the behaviour the whole design exists to produce.
+
 *(Run in progress — the result follows.)*
